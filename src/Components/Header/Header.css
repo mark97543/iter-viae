@@ -1,0 +1,73 @@
+/*Header.css */
+
+.Header_wrapper{
+  display: grid;
+  grid-template-columns: 150px auto 150px;
+  grid-template-rows: auto;
+  background-color: var(--color-surface);
+  box-sizing: border-box;
+  min-height: 60px;
+  border-top:1px solid var(--color-border) ;
+  border-bottom:1px solid var(--color-border);
+  padding-left: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.Header_wrapper.scrolled{
+  top: 10px;
+  left: 20px;
+  right: 20px;
+  border-radius: 8px;
+  background-color: rgba(30, 30, 30, 0.9);
+  backdrop-filter: blur(8px); /* The 'trick' blur */
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.HeaderLeftLogo{
+  font-family: 'Roboto Condensed', 'Impact', sans-serif;
+  align-self: center;
+  font-size: 2rem;
+  padding: 0px;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.HeaderMiddleWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;     
+  justify-content: left; 
+  gap: 30px;  
+  margin-left: 20px;             
+}
+
+.HeaderMiddleWrapper p, 
+.HeaderMiddleWrapper a {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+
+.HeaderMiddleWrapper p:hover, 
+.HeaderMiddleWrapper a:hover {
+  color: var(--color-accent);
+}
+
+.HeaderRightWrapper{
+  margin-right: 20px;
+  margin-left: auto;
+  align-content: center;
+}
