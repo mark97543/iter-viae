@@ -22,6 +22,7 @@ const Register = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         //TODO:Need to add backend integration
+        //TODO: Need to make sure all information is there 
     }
 
     return (
@@ -29,6 +30,7 @@ const Register = () => {
             <h1>Register</h1>
             <form className="register-form" onSubmit={handleSubmit}>
                 <input className="std-input" type="text" placeholder="Username" />
+                <input className="std-input" type="email" placeholder="Email" />
                 <input className="std-input" type="password" placeholder="Password" onChange={handlePasswordChange}/>
                 <input className="std-input" type="password" placeholder="Confirm Password" onChange={handleConfirmPasswordChange}/>
                 <button type="submit" className="std-button">Register</button>
