@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   // 3. Auth Actions
-  const register = (email: string, password: string) => client.request(createUser({ email, password, role: 'user' }));
+  const register = (email: string, password: string, username: string) => client.request(createUser({ email, password, first_name: username, status: 'unverified', role:'a149f728-88c1-4828-86da-3540d675f1c7'}));
   const login = async (email: string, password: string) => {
     try {
       await client.login({ email, password });

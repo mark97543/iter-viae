@@ -27,8 +27,6 @@ export const HeaderRight = () =>{
   const navigate = useNavigate()
   return(
     <div className="HeaderRightWrapper">
-      {/* TODO: Make this conditional rendor based on user loggin status */}
-      {/* TODO: Make this link to login page */}
       {user ? (
         <button className="std-button" onClick={() => logout()}>Logout</button>
       ) : (

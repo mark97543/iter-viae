@@ -24,7 +24,7 @@ const Login = () => {
             navigate('/dashboard');
         } catch (err: any) {
             console.error("Login Error details:", err?.errors || err);
-            setError('Invalid email or password');
+            setError('Invalid email or password. If you already Registered Please wait for your profile to be approved.');
         }
     };
 
