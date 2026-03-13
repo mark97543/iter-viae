@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom"
 
 //Header Logo
 export const HeaderLeft = () =>{
+  const {user} = useAuth()
   return(
-    <Link to='/' className="HeaderLeftLogo">Iter Viae</Link>
+    <Link to={user ? '/dashboard' : '/'} className="HeaderLeftLogo">Iter Viae</Link>
   )
 }
 
-//TODO: Need this to go to dashboard once user is logged in,. 
+
 
 export const HeaderMiddle = () =>{
   return(
@@ -20,7 +21,7 @@ export const HeaderMiddle = () =>{
   )
 }
 
-//TODO: Remove Template Items 
+
 
 export const HeaderRight = () =>{
   const {user, logout} = useAuth()
