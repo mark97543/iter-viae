@@ -18,4 +18,4 @@ const Login = () => {
 export default Login;
 
 // TODO: Need to make login button submit user form data
-//TODO: Need to make register link go to register page (Need to make Register Page)
+

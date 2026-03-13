@@ -24,6 +24,7 @@ export const HeaderRight = () =>{
   return(
     <div className="HeaderRightWrapper">
       {/* TODO: Make this conditional rendor based on user loggin status */}
+      {/* TODO: Make this link to login page */}
       <button className="std-button">Login</button>
     </div>
   )

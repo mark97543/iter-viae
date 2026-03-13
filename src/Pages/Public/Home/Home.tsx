@@ -1,6 +1,8 @@
 import './Home.css'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
+  const navigate = useNavigate()
   return (
     <div className="home-content">
       <header className="hero-branding">
@@ -29,12 +31,10 @@ const Home = () => {
       </div>
 
       <div className="cta-area">
-        <button className="std-button">Begin your Journey</button>
+        <button className="std-button" onClick={() => navigate('/login')}>Begin your Journey</button>
       </div>
     </div>
   )
 }
 
 export default Home
-
-//TODO: Need to have the Begin Your Journey Lead to the Login Page
