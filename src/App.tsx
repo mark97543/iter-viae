@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './Components/Header/Header'
 import Home from './Pages/Public/Home/Home'
 import About from './Pages/Public/About/About'
@@ -8,6 +8,7 @@ import Register from './Pages/Public/Register/Register'
 import { AuthProvider } from './Contexts/AuthContext'
 import { ProtectedRoute } from './Components/ProtectedRoute/ProtectedRoute'
 import Dashboard from './Pages/Private/Dashboard/Dashboard'
+import NotFound from './Pages/Public/NotFound/NotFound'
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         </main>
       </BrowserRouter>
