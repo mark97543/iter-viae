@@ -12,7 +12,7 @@ export const HeaderLeft = () =>{
 export const HeaderMiddle = () =>{
   return(
     <div className="HeaderMiddleWrapper">
-      {/* <p><Link to='/'>Link 1</Link></p> */}
+      <p><Link to='/about'>About</Link></p>
 
     </div>
   )
