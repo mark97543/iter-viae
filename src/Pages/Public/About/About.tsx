@@ -25,9 +25,9 @@ const About = () => {
             </header>
 
             <h3 className="version-info">
-                Version 0.0.1
+                Version 0.2
                 <br />
-                Codename Primus    
+                Codename Secondus    
             </h3>
             
             <main className="project-goals">
