@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       await client.login({ email, password });
-      console.log("Login successful (Auth Context)");
+      //console.log("Login successful (Auth Context)");
       
       const token = await client.getToken();
       if (token) localStorage.setItem('directus_token', token);

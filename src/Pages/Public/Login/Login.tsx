@@ -15,7 +15,7 @@ const Login = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("Form submit triggered with values:", email, password);
+        //console.log("Form submit triggered with values:", email, password);
         setError('');
         
         try {
