@@ -6,6 +6,7 @@ import About from './Pages/Public/About/About'
 import Login from './Pages/Public/Login/Login'
 import Register from './Pages/Public/Register/Register'
 import { AuthProvider } from './Contexts/AuthContext'
+import { StateProvider } from './Contexts/StateContext'
 import { ProtectedRoute } from './Components/ProtectedRoute/ProtectedRoute'
 import Dashboard from './Pages/Private/Dashboard/Dashboard'
 import NotFound from './Pages/Public/NotFound/NotFound'
@@ -15,9 +16,10 @@ function App() {
 
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Header/>
-        <main>
+      <StateProvider>
+        <BrowserRouter>
+          <Header/>
+          <main>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -27,7 +29,8 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
         </main>
-      </BrowserRouter>
+        </BrowserRouter>
+      </StateProvider>
     </AuthProvider>
   )
 }

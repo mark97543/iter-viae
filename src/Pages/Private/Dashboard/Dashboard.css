@@ -1,0 +1,93 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    color: var(--text-color, #2c3e50);
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.dashboard h1 {
+    margin: 0 0 2rem 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--color-primary  , #1f2937);
+    text-align: center;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.trip-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    background-color: var(--color-surface, #ffffff);
+    border: 1px solid var(--color-border, rgba(0, 0, 0, 0.05));
+    border-radius: 12px;
+    gap: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.trip-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.trip-card h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-primary  , #1f2937);
+    text-align: center;
+}
+
+.search-input{
+    width: 300px;
+    margin-bottom: 1rem;;
+}
+
+.trip-stats {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-text, #6b7280);
+    text-align: center;
+    border-top: 3px solid var(--color-border, rgba(0, 0, 0, 0.05));
+    border-bottom: 3px solid var(--color-border, rgba(0, 0, 0, 0.05));
+}
+
+.trip-stats p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-primary, #1f2937);
+}
+
+.trip-summary {
+    font-size: 0.9rem;
+    color: var(--color-text, #6b7280);
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 10;
+    line-clamp: 10;
+    -webkit-box-orient: vertical;
+}
