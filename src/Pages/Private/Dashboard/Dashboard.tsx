@@ -3,7 +3,6 @@ import {useEffect, useState} from 'react';
 import {useDashboardData, convertMinutesToHoursAndMinutes} from './Dahsboard.hooks';
 import { useAppState } from '../../../Contexts/StateContext';
 import { useAuth } from '../../../Contexts/AuthContext';
-import { DashStatus } from './Dashboar.html';
 
 const Dashboard = () => {
     const { fetchTrips } = useDashboardData();
@@ -53,7 +52,6 @@ const Dashboard = () => {
                                 <p><b>Distance</b> <br/>{trip.distance || '0'}mi</p>                                
                             </div>
                             <p className='trip-summary'>{trip.summary}</p>
-                            <DashStatus status={trip.status} date={trip.status_date}/>
                         </div>
                     )
                 })}
