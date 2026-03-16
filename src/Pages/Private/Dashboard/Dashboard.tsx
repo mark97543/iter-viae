@@ -1,13 +1,15 @@
 import './Dashboard.css'
 import {useEffect, useState} from 'react';
 import {useDashboardData, convertMinutesToHoursAndMinutes} from './Dahsboard.hooks';
+import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../../../Contexts/StateContext';
 import { useAuth } from '../../../Contexts/AuthContext';
 import { DashStatus } from './Dashboar.html';
 
 const Dashboard = () => {
     const { fetchTrips } = useDashboardData();
-    const { trips, setTrips } = useAppState();
+    const navigate = useNavigate();
+    const { trips, setTrips, setSelectedTrip } = useAppState();
     const { user } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredTrips, setFilteredTrips] = useState(trips);
@@ -44,7 +46,10 @@ const Dashboard = () => {
             <div className='dashboard-grid'>
                 {filteredTrips.map((trip) => {
                     return (
-                        <div key={trip.id} className="trip-card">
+                        <div key={trip.id} className="trip-card" onClick={() => {
+                            setSelectedTrip(trip);
+                            navigate(`/trip/${trip.id}`);
+                        }}>
                             <h2>{trip.trip_title}</h2>
                             <div className="trip-stats">
                                 {/* TODO: Need to make sure trip stats are saved after calculation */}

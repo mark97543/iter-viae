@@ -10,6 +10,7 @@ import { StateProvider } from './Contexts/StateContext'
 import { ProtectedRoute } from './Components/ProtectedRoute/ProtectedRoute'
 import Dashboard from './Pages/Private/Dashboard/Dashboard'
 import NotFound from './Pages/Public/NotFound/NotFound'
+import ItemView from './Pages/Private/ItemView/ItemView'
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/trip/:id" element={<ProtectedRoute><ItemView /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </main>
