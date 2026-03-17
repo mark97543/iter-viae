@@ -11,21 +11,24 @@ const ItemView = () => {
     const [tempTitle, setTempTitle] = useState(selectedTrip?.trip_title);
     const [tempSummary, setTempSummary] = useState(selectedTrip?.summary);
     const [tempStartDate, setTempStartDate] = useState(selectedTrip?.status_date);
+    const [tempStatus, setTempStatus] = useState(selectedTrip?.status);
 
     const onCancel = () =>{
         setTempTitle(selectedTrip?.trip_title);
         setTempSummary(selectedTrip?.summary);
         setTempStartDate(selectedTrip?.status_date);
+        setTempStatus(selectedTrip?.status);
         setEditMode(false);
     }
 
     const onSave = async () =>{
         if (!selectedTrip) return;
         try {
-            const payload = { trip_title: tempTitle, summary: tempSummary, status_date: tempStartDate};
+            const safeStartDate = tempStartDate === "" ? null : tempStartDate;
+            const payload = { trip_title: tempTitle, summary: tempSummary, status_date: safeStartDate, status: tempStatus };
             await updateTrip(selectedTrip.id, payload);
             
-            const updatedTrip = {...selectedTrip, trip_title: tempTitle, summary: tempSummary, status_date: tempStartDate};
+            const updatedTrip = {...selectedTrip, trip_title: tempTitle, summary: tempSummary, status_date: safeStartDate, status: tempStatus };
             setSelectedTrip(updatedTrip);
             
             const updatedTrips = trips.map((t: any) => t.id === selectedTrip.id ? updatedTrip : t);
@@ -48,7 +51,14 @@ const ItemView = () => {
 
             <div className="statistics-container">
                 <h2>Statistics</h2>
-                <TripStatistics selectedTrip={selectedTrip} editMode={editMode} tempStartDate={tempStartDate} setTempStartDate={setTempStartDate} />
+                <TripStatistics 
+                    selectedTrip={selectedTrip} 
+                    editMode={editMode} 
+                    tempStartDate={tempStartDate} 
+                    setTempStartDate={setTempStartDate} 
+                    tempStatus={tempStatus}
+                    setTempStatus={setTempStatus}
+                />
             </div>
 
 

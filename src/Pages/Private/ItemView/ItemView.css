@@ -59,3 +59,14 @@
     height: 25px;
     
 }
+
+.status-select{
+    width: 100%;
+    height: 2remrem;
+    font-size: 1.4rem;
+    text-transform: capitalize;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}

@@ -35,7 +35,7 @@ export const TripSummary = ({tempSummary, editMode, setTempSummary}: {tempSummar
     )
 }
 
-export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempStartDate}: {selectedTrip: any, editMode:boolean, tempStartDate: string, setTempStartDate: (tempStartDate: string) => void}) =>{
+export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempStartDate, tempStatus, setTempStatus}: {selectedTrip: any, editMode:boolean, tempStartDate: string, setTempStartDate: (tempStartDate: string) => void, tempStatus: string, setTempStatus: (tempStatus: string) => void}) =>{
     return(
         <div className='statistics'>
             <h3>Budget: <br></br>${selectedTrip?.budget}</h3>
@@ -48,10 +48,26 @@ export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempSt
                     onChange={(e) => setTempStartDate(e.target.value)} 
                     className="std-input date-input"    
                 />
+                
             ) : (
-                <h3>Start Date: <br></br>{tempStartDate}</h3>
+                <h3>Start Date: <br></br>{tempStartDate || "Not Set"}</h3>
             )}
-            <h3>Status: <br></br><span style={{ textTransform: 'capitalize' }}>{selectedTrip?.status}</span></h3>
+            {editMode ? (
+                <div>
+                   <select 
+                        value={tempStatus} 
+                        onChange={(e) => setTempStatus(e.target.value)}
+                        className="std-input status-select"
+                        style={{ marginTop: '0.5rem', width: '100%', textTransform: 'capitalize' }}
+                    >
+                        <option value="draft">Draft</option>
+                        <option value="planned">Planned</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+            ) : (
+                <h3>Status: <br></br><span style={{ textTransform: 'capitalize' }}>{selectedTrip?.status}</span></h3>
+            )}
         </div>
     )
 }
