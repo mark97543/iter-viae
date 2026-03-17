@@ -3,9 +3,11 @@ import { useAppState } from '../../../Contexts/StateContext'
 import {convertMinutesToHoursAndMinutes} from '../Dashboard/Dahsboard.hooks'
 import { useState } from 'react'
 import { TripTitle } from './ItemView.html'
+import { useItemViewData } from './ItemView.hooks'
 
 const ItemView = () => {
-    const { selectedTrip, setSelectedTrip } = useAppState();
+    const { trips, setTrips, selectedTrip, setSelectedTrip } = useAppState();
+    const { updateTrip, updating } = useItemViewData();
     const [editMode, setEditMode] = useState(false);
     const [tempTitle, setTempTitle] = useState(selectedTrip?.trip_title);
 
@@ -14,9 +16,22 @@ const ItemView = () => {
         setEditMode(false);
     }
 
-    const onSave = () =>{
-        setSelectedTrip({...selectedTrip, trip_title: tempTitle});
-        setEditMode(false);
+    const onSave = async () =>{
+        if (!selectedTrip) return;
+        try {
+            const payload = { trip_title: tempTitle };
+            await updateTrip(selectedTrip.id, payload);
+            
+            const updatedTrip = {...selectedTrip, trip_title: tempTitle};
+            setSelectedTrip(updatedTrip);
+            
+            const updatedTrips = trips.map((t: any) => t.id === selectedTrip.id ? updatedTrip : t);
+            setTrips(updatedTrips);
+            
+            setEditMode(false);
+        } catch (err) {
+            alert("There was an error updating the trip. Please try again.");
+        }
     }
 
     return (
@@ -47,9 +62,11 @@ const ItemView = () => {
             <div className='item-button-container'>
                 {editMode ? (
                     <>
-                    <button className='std-button' onClick={() => onSave()}>Save Trip</button>
+                    <button className='std-button' onClick={() => onSave()} disabled={updating}>
+                        {updating ? 'Saving...' : 'Save Trip'}
+                    </button>
                     <button className='std-button'>Delete Trip</button>
-                    <button className='std-button' onClick={() => onCancel()}>Cancel</button>
+                    <button className='std-button' onClick={() => onCancel()} disabled={updating}>Cancel</button>
                     </>
                 ):(
                     <button className='std-button' onClick={() => setEditMode(true)}>Edit Trip</button>
