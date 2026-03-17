@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { createDirectus, rest, readItems, authentication } from '@directus/sdk';
 
 const client = createDirectus('https://api.wade-usa.com')
@@ -15,7 +15,7 @@ export const useDashboardData = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchTrips = async (userId?: string) => {
+    const fetchTrips = useCallback(async (userId?: string) => {
         setLoading(true);
         setError(null);
         try {
@@ -44,7 +44,7 @@ export const useDashboardData = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     return {
         trips,

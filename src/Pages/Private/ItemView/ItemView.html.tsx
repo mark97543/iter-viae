@@ -71,3 +71,56 @@ export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempSt
         </div>
     )
 }
+
+export const TripStops = ({ stops, editMode, setStops }: { stops: any[], editMode: boolean, setStops: (stops: any[]) => void }) =>{
+
+    return(
+        <div>
+            <h2>Stops</h2>
+            <div>
+                {stops && stops.length > 0 ? (
+                    editMode ? (
+                        <TripStopsEdit stops={stops} setStops={setStops}/>
+                    ) : (
+                        <TripStopsDisplay stops={stops} />
+                    )
+                ) : (
+                    <p>No stops found for this trip.</p>
+                )}
+            </div>
+        </div>
+    )
+}
+
+export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
+    return(
+        stops.map((stop, index) => (
+            <div key={stop.id || index} className="stop-card">
+                <h3>{stop.stop_name}</h3>
+            </div>
+        ))
+    )
+}
+
+export const TripStopsEdit = ({ stops, setStops }: { stops: any[], setStops: (stops: any[]) => void }) =>{
+    return(
+        <div>
+
+            {stops && stops.length > 0 ? (
+                stops.map((stop, index) => (
+                    <div key={stop.id || index} className="stop-card">
+                        <input
+                            type="text"
+                            value={stop.stop_name}
+                            onChange={(e) => setStops(stops.map((stop, index) => index === 0 ? { ...stop, stop_name: e.target.value } : stop))}
+                            className="std-input stop-card-input"
+                        />
+                    </div>
+                ))
+            ) : (
+                <p>No stops found for this trip.</p>
+            )}
+
+        </div>
+    )
+}
