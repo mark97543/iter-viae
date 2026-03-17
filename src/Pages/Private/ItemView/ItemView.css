@@ -14,6 +14,8 @@
     grid-template-columns: auto auto auto auto auto;
     gap: 1rem;
     text-align: center;
+    justify-items: center;
+    align-items: center;
 }
 
 .item-button-container{
@@ -52,3 +54,8 @@
     box-sizing: border-box;
 }
 
+.date-input{
+    font-size: 1.4rem;
+    height: 25px;
+    
+}

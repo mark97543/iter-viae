@@ -1,8 +1,7 @@
 import './ItemView.css'
 import { useAppState } from '../../../Contexts/StateContext'
-import {convertMinutesToHoursAndMinutes} from '../Dashboard/Dahsboard.hooks'
 import { useState } from 'react'
-import { TripTitle, TripSummary } from './ItemView.html'
+import { TripTitle, TripSummary, TripStatistics } from './ItemView.html'
 import { useItemViewData } from './ItemView.hooks'
 
 const ItemView = () => {
@@ -11,20 +10,22 @@ const ItemView = () => {
     const [editMode, setEditMode] = useState(false);
     const [tempTitle, setTempTitle] = useState(selectedTrip?.trip_title);
     const [tempSummary, setTempSummary] = useState(selectedTrip?.summary);
+    const [tempStartDate, setTempStartDate] = useState(selectedTrip?.status_date);
 
     const onCancel = () =>{
         setTempTitle(selectedTrip?.trip_title);
         setTempSummary(selectedTrip?.summary);
+        setTempStartDate(selectedTrip?.status_date);
         setEditMode(false);
     }
 
     const onSave = async () =>{
         if (!selectedTrip) return;
         try {
-            const payload = { trip_title: tempTitle, summary: tempSummary};
+            const payload = { trip_title: tempTitle, summary: tempSummary, status_date: tempStartDate};
             await updateTrip(selectedTrip.id, payload);
             
-            const updatedTrip = {...selectedTrip, trip_title: tempTitle, summary: tempSummary};
+            const updatedTrip = {...selectedTrip, trip_title: tempTitle, summary: tempSummary, status_date: tempStartDate};
             setSelectedTrip(updatedTrip);
             
             const updatedTrips = trips.map((t: any) => t.id === selectedTrip.id ? updatedTrip : t);
@@ -47,13 +48,7 @@ const ItemView = () => {
 
             <div className="statistics-container">
                 <h2>Statistics</h2>
-                <div className='statistics'>
-                    <h3>Budget: <br></br>${selectedTrip?.budget}</h3>
-                    <h3>Duration: <br></br>{convertMinutesToHoursAndMinutes(selectedTrip?.duration || 0).hours}h {convertMinutesToHoursAndMinutes(selectedTrip?.duration || 0).minutes}m</h3>
-                    <h3>Distance: <br></br>{selectedTrip?.distance}mi</h3>
-                    <h3>Start Date: <br></br>{selectedTrip?.status_date}</h3>
-                    <h3>Status: <br></br><span style={{ textTransform: 'capitalize' }}>{selectedTrip?.status}</span></h3>
-                </div>
+                <TripStatistics selectedTrip={selectedTrip} editMode={editMode} tempStartDate={tempStartDate} setTempStartDate={setTempStartDate} />
             </div>
 
 
