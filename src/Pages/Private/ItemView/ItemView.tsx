@@ -2,7 +2,7 @@ import './ItemView.css'
 import { useAppState } from '../../../Contexts/StateContext'
 import {convertMinutesToHoursAndMinutes} from '../Dashboard/Dahsboard.hooks'
 import { useState } from 'react'
-import { TripTitle } from './ItemView.html'
+import { TripTitle, TripSummary } from './ItemView.html'
 import { useItemViewData } from './ItemView.hooks'
 
 const ItemView = () => {
@@ -10,19 +10,21 @@ const ItemView = () => {
     const { updateTrip, updating } = useItemViewData();
     const [editMode, setEditMode] = useState(false);
     const [tempTitle, setTempTitle] = useState(selectedTrip?.trip_title);
+    const [tempSummary, setTempSummary] = useState(selectedTrip?.summary);
 
     const onCancel = () =>{
         setTempTitle(selectedTrip?.trip_title);
+        setTempSummary(selectedTrip?.summary);
         setEditMode(false);
     }
 
     const onSave = async () =>{
         if (!selectedTrip) return;
         try {
-            const payload = { trip_title: tempTitle };
+            const payload = { trip_title: tempTitle, summary: tempSummary};
             await updateTrip(selectedTrip.id, payload);
             
-            const updatedTrip = {...selectedTrip, trip_title: tempTitle};
+            const updatedTrip = {...selectedTrip, trip_title: tempTitle, summary: tempSummary};
             setSelectedTrip(updatedTrip);
             
             const updatedTrips = trips.map((t: any) => t.id === selectedTrip.id ? updatedTrip : t);
@@ -40,7 +42,7 @@ const ItemView = () => {
 
             <div className="summary-container">
                 <h2>Summary</h2>
-                <p>{selectedTrip?.summary}</p>
+                <TripSummary tempSummary={tempSummary} editMode={editMode} setTempSummary={setTempSummary} />
             </div>
 
             <div className="statistics-container">

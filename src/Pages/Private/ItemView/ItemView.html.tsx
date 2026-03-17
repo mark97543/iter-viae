@@ -17,3 +17,20 @@ export const TripTitle = ({tempTitle, editMode, setTempTitle}: {tempTitle: strin
         </div>       
     )
 }
+
+export const TripSummary = ({tempSummary, editMode, setTempSummary}: {tempSummary: string, editMode:boolean, setTempSummary: (tempSummary: string) => void}) => {
+    return (
+        <div>
+            {editMode ? (
+                <textarea
+                    placeholder="Trip Summary"
+                    value={tempSummary}
+                    onChange={(e) => setTempSummary(e.target.value)}
+                    className="std-input summary-input"
+                />
+            ) : (
+                <p>{tempSummary}</p>
+            )}
+        </div>
+    )
+}
