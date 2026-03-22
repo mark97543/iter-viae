@@ -1,8 +1,23 @@
 import {convertMinutesToHoursAndMinutes} from '../Dashboard/Dahsboard.hooks'
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 
 export const TripTitle = ({tempTitle, editMode, setTempTitle}: {tempTitle: string, editMode:boolean, setTempTitle: (tempTitle: string) => void}) => {
     return (
-        <div>
+        <div className='trip-title-container'>
             {editMode ? (
                 <input 
                     type="text" 
@@ -72,7 +87,7 @@ export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempSt
     )
 }
 
-export const TripStops = ({ stops, editMode, setStops }: { stops: any[], editMode: boolean, setStops: (stops: any[]) => void }) =>{
+export const TripStops = ({ stops, editMode, setStops, onDragEnd }: { stops: any[], editMode: boolean, setStops: (stops: any[]) => void, onDragEnd: (event: any) => void }) =>{
 
     return(
         <div>
@@ -80,7 +95,7 @@ export const TripStops = ({ stops, editMode, setStops }: { stops: any[], editMod
             <div>
                 {stops && stops.length > 0 ? (
                     editMode ? (
-                        <TripStopsEdit stops={stops} setStops={setStops}/>
+                        <TripStopsEdit stops={stops} setStops={setStops} onDragEnd={onDragEnd}/>
                     ) : (
                         <TripStopsDisplay stops={stops} />
                     )
@@ -92,35 +107,154 @@ export const TripStops = ({ stops, editMode, setStops }: { stops: any[], editMod
     )
 }
 
+const stopType = [
+    {
+        type: 'Origin',
+        value: 'origin',
+        icon:'/TypeIcons/origin.png'
+    },
+    {
+        type: 'Gas',
+        value: 'gas',
+        icon: '/TypeIcons/gas.png'
+    },
+    {
+        type: 'Food',
+        value: 'food',
+        icon: '/TypeIcons/food.png'
+    },
+    {
+        type: 'Activity',
+        value: 'activity',
+        icon: '/TypeIcons/activity.png'
+    },
+    {
+        type:'Hotel',
+        value: 'hotel',
+        icon: '/TypeIcons/hotel.png'
+    },
+    {
+        type: 'Waypoint',
+        value: 'waypoint',
+        icon: '/TypeIcons/waypoint.png'
+    },
+    {
+        type: 'End',
+        value: 'end',
+        icon: '/TypeIcons/end.png'
+    }
+]
+
 export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
     return(
-        stops.map((stop, index) => (
-            <div key={stop.id || index} className="stop-card">
-                <h3>{stop.stop_name}</h3>
-            </div>
-        ))
+        <div className="stops-list">
+            {stops.map((stop, index) => (
+                <div key={stop.id || index} className="stop-card">
+                    <div className="stop-card-type">
+                        <img src={stopType.find((type) => type.value === stop.type)?.icon} alt={stop.type} />
+                    </div>
+                    <div className="stop-card-info">
+                        <h3>{stop.stop_name}</h3>
+                        {stop.budget && <span className="stop-budget-display">${stop.budget}</span>}
+                    </div>
+                </div>
+            ))}
+        </div>
     )
 }
 
-export const TripStopsEdit = ({ stops, setStops }: { stops: any[], setStops: (stops: any[]) => void }) =>{
-    return(
-        <div>
+//TODO: Need to add rest of the stop card functionality
 
-            {stops && stops.length > 0 ? (
-                stops.map((stop, index) => (
-                    <div key={stop.id || index} className="stop-card">
-                        <input
-                            type="text"
-                            value={stop.stop_name}
-                            onChange={(e) => setStops(stops.map((stop, index) => index === 0 ? { ...stop, stop_name: e.target.value } : stop))}
-                            className="std-input stop-card-input"
-                        />
-                    </div>
-                ))
-            ) : (
-                <p>No stops found for this trip.</p>
-            )}
+export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, index: number, stops: any[], setStops: (stops: any[]) => void }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({id: stop.id});
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isDragging ? 2 : 1,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} className="stop-card edit-mode">
+            <div className="drag-handle" {...attributes} {...listeners}>
+                <span className="material-symbols-outlined">drag_indicator</span>
+            </div>
+            <div className="stop-card-type">
+                <img src={stopType.find((type) => type.value === stop.type)?.icon} alt={stop.type} />
+            </div>
+            <select 
+                value={stop.type} 
+                onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, type: e.target.value } : s))}
+                className="std-input stop-type-select"
+            >
+                {stopType.map((type) => (
+                    <option key={type.value} value={type.value}>{type.type}</option>
+                ))}
+            </select>
+            <input
+                type="text"
+                placeholder="Stop Name"
+                value={stop.stop_name}
+                onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, stop_name: e.target.value } : s))}
+                className="std-input stop-card-input"
+            />
+            <div className="stop-budget-input-wrapper">
+                <span className="currency-symbol">$</span>
+                <input
+                    type="number"
+                    placeholder="Budget"
+                    value={stop.budget || ''}
+                    onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, budget: e.target.value === '' ? null : Number(e.target.value) } : s))}
+                    className="std-input stop-budget-input"
+                />
+            </div>
 
         </div>
+    );
+};
+
+export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], setStops: (stops: any[]) => void, onDragEnd: (event: any) => void }) =>{
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    return(
+        <DndContext 
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={onDragEnd}
+        >
+            <SortableContext 
+                items={stops.map(s => s.id)}
+                strategy={verticalListSortingStrategy}
+            >
+                <div className="stops-list-edit">
+                    {stops && stops.length > 0 ? (
+                        stops.map((stop, index) => (
+                            <SortableStopCard 
+                                key={stop.id} 
+                                stop={stop} 
+                                index={index} 
+                                stops={stops} 
+                                setStops={setStops} 
+                            />
+                        ))
+                    ) : (
+                        <p>No stops found for this trip.</p>
+                    )}
+                </div>
+            </SortableContext>
+        </DndContext>
     )
 }
