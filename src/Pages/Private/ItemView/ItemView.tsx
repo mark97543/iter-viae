@@ -43,7 +43,8 @@ const ItemView = () => {
 
             //Sum Budget Items 
             const totalBudget = stops.reduce((acc, stop) => acc + (Number(stop.budget) || 0), 0);
-
+            
+            //Create Payload for Data
             const payload = { trip_title: tempTitle, summary: tempSummary, status_date: safeStartDate, status: tempStatus, budget: totalBudget };
 
             // Update trip details

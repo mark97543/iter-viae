@@ -74,7 +74,8 @@ export const useItemViewData = () => {
                     sort: index + 1,
                     stop_name: stop.stop_name,
                     budget: stop.budget ? parseFloat(stop.budget) : null,
-                    type: stop.type
+                    type: stop.type,
+                    location: stop.location
                 }));
             });
             

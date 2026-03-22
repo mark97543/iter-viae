@@ -146,6 +146,11 @@ const stopType = [
 ]
 
 export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
+    const handleCopy = (stop: any) => {
+        const textToCopy = `${stop.location ? `${stop.location}` : ''}`;
+        navigator.clipboard.writeText(textToCopy);
+    };
+
     return(
         <div className="stops-list">
             {stops.map((stop, index) => (
@@ -155,8 +160,16 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
                     </div>
                     <div className="stop-card-info">
                         <h3>{stop.stop_name}</h3>
-                        {stop.budget && <span className="stop-budget-display">${stop.budget}</span>}
+                        <h3>
+                            <button className="location-button" onClick={() => handleCopy(stop)} title="Copy Info">
+                                {stop.location 
+                                    ? stop.location.split(',').map((num: string) => parseFloat(num).toFixed(5)).join(', ')
+                                    : "No Location"}
+                            </button>
+                        </h3>
+                        {/* {stop.budget && <span className="stop-budget-display">Budget: ${stop.budget}</span>} */}
                     </div>
+
                 </div>
             ))}
         </div>
@@ -187,9 +200,6 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
             <div className="drag-handle" {...attributes} {...listeners}>
                 <span className="material-symbols-outlined">drag_indicator</span>
             </div>
-            <div className="stop-card-type">
-                <img src={stopType.find((type) => type.value === stop.type)?.icon} alt={stop.type} />
-            </div>
             <select 
                 value={stop.type} 
                 onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, type: e.target.value } : s))}
@@ -199,13 +209,23 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                     <option key={type.value} value={type.value}>{type.type}</option>
                 ))}
             </select>
-            <input
-                type="text"
-                placeholder="Stop Name"
-                value={stop.stop_name}
-                onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, stop_name: e.target.value } : s))}
-                className="std-input stop-card-input"
-            />
+            <div className="stop-card-info">
+                <input
+                    type="text"
+                    placeholder="Stop Name"
+                    value={stop.stop_name}
+                    onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, stop_name: e.target.value } : s))}
+                    className="std-input stop-card-input"
+                />
+                <input
+                    type="text"
+                    placeholder="Location"
+                    value={stop.location}
+                    onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, location: e.target.value } : s))}
+                    className="std-input stop-card-input"
+                />
+            </div>
+
             <div className="stop-budget-input-wrapper">
                 <span className="currency-symbol">$</span>
                 <input
