@@ -167,6 +167,9 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
                                     : "No Location"}
                             </button>
                         </h3>
+                        <h3 className="stop-card-note">
+                            <b>Note: </b><i>{stop.note || "None"}</i> 
+                        </h3>
                         {/* {stop.budget && <span className="stop-budget-display">Budget: ${stop.budget}</span>} */}
                     </div>
 
@@ -223,6 +226,13 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                     value={stop.location}
                     onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, location: e.target.value } : s))}
                     className="std-input stop-card-input"
+                />
+                <textarea
+                    placeholder="Note"
+                    value={stop.note}
+                    onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, note: e.target.value } : s))}
+                    className="std-input stop-card-input note-input"
+                    rows={5}
                 />
             </div>
 

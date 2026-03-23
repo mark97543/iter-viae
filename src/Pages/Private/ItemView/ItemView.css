@@ -104,15 +104,18 @@
     margin-top: 1em;
     margin-bottom: 1em;
     box-sizing: border-box;
-    
+    height: auto;
 }
 
 .stop-card.edit-mode {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.75rem;
     cursor: default;
     width: 100%;
+    height: fit-content;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 .drag-handle {
@@ -156,6 +159,12 @@
     margin-top: 0;
 }
 
+.stop-card-note{
+    font-size: 1rem !important;
+    color: var(--color-text-dim);
+    font-weight: 400;
+}
+
 .stop-budget-display {
     font-family: var(--font-main);
     font-size: 1.1rem;
@@ -181,6 +190,7 @@
     width: 100px;
     height: 2rem;
     flex-shrink: 0;
+    font-size: 1rem;
 }
 
 .material-symbols-outlined {
@@ -211,7 +221,7 @@
 .stop-type-select {
     width: 120px;
     flex-shrink: 0;
-    height: 2rem;
+    height: 2.5rem;
 }
 
 .location-button {
@@ -228,4 +238,10 @@
     text-align: left;
     width: 100%;
     box-sizing: border-box;
+}
+
+.std-input.stop-card-input.note-input{
+    height: auto !important;
+    min-height: 100px !important;
+    resize: none;
 }

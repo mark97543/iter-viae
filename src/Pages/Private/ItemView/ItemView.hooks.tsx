@@ -75,7 +75,8 @@ export const useItemViewData = () => {
                     stop_name: stop.stop_name,
                     budget: stop.budget ? parseFloat(stop.budget) : null,
                     type: stop.type,
-                    location: stop.location
+                    location: stop.location,
+                    note: stop.note
                 }));
             });
             
