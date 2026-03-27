@@ -12,7 +12,7 @@ const Home = () => {
 
       <section className="manifesto">
         <p>
-          Welcome to <strong>Iter Viae</strong>. We are building a specialized route planner designed to complement 
+          Welcome to <strong>Iter Viae Version 0.2 Secundus</strong>. We are building a specialized route planner designed to complement 
           your standard navigation tools, providing the granular control required to truly 
           map out your ultimate journey. 
         </p>

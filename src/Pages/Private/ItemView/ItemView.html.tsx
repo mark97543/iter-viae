@@ -170,9 +170,15 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
                         <h3 className="stop-card-note">
                             <b>Note: </b><i>{stop.note || "None"}</i> 
                         </h3>
-                        {/* {stop.budget && <span className="stop-budget-display">Budget: ${stop.budget}</span>} */}
                     </div>
-
+                    <div className='stop-card-time'>
+                        <h3><b>Arrive: </b>&nbsp; &nbsp;<i>{stop.arrive || "Not Set"}</i></h3>
+                        <h3><b>Break: </b>&nbsp; &nbsp;<i>{stop.stay || "Not Set"}</i></h3>
+                        <h3><b>Depart: </b>&nbsp; <i>{stop.depart || "Not Set"}</i></h3>
+                    </div>
+                    <div className='stop-card-budget'>
+                        <h3><b>Budget: </b>&nbsp; &nbsp;<i>{stop.budget ? `$${stop.budget}` : "Not Set"}</i></h3>
+                    </div>
                 </div>
             ))}
         </div>
