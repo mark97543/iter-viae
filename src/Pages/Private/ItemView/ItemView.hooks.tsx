@@ -47,7 +47,17 @@ export const useItemViewData = () => {
                 },
                 sort: ['sort']
             }));            
-            return result as any[];
+            
+            // Split stay (hh:mm) into stayHours and stayMinutes for UI
+            const processedStops = (result as any[]).map(stop => {
+                if (stop.stay) {
+                    const [hours, minutes] = stop.stay.split(':');
+                    return { ...stop, stayHours: hours, stayMinutes: minutes };
+                }
+                return { ...stop, stayHours: '', stayMinutes: '' };
+            });
+            
+            return processedStops;
         } catch (err: any) {
             console.error("Error fetching stops from Directus: [useItemViewData]", err);
             setError(err.message || "Failed to fetch stops");
@@ -66,17 +76,22 @@ export const useItemViewData = () => {
                 client.setToken(token);
             }
             
-            // Directus doesn't support bulk update with different values for each item in a simple way through the SDK's updateItems if we want to update different fields.
-            // But here we are updating 'sort' and 'stop_name' for each stop.
-            // We'll do it in a loop for now, or use a batch request if available.
             const promises = stops.map((stop, index) => {
+                // Combine stayHours and stayMinutes into stay (hh:mm)
+                const hours = stop.stayHours?.padStart(2, '0') || '00';
+                const minutes = stop.stayMinutes?.padStart(2, '0') || '00';
+                const stayCombined = (stop.stayHours || stop.stayMinutes) ? `${hours}:${minutes}` : null;
+
                 return client.request(updateItem('stop', stop.id, {
                     sort: index + 1,
                     stop_name: stop.stop_name,
                     budget: stop.budget ? parseFloat(stop.budget) : null,
                     type: stop.type,
                     location: stop.location,
-                    note: stop.note
+                    note: stop.note,
+                    depart: stop.depart,
+                    stay: stayCombined,
+                    arrive: stop.arrive
                 }));
             });
             

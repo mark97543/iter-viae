@@ -15,6 +15,7 @@ import {
 } from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 
+
 export const TripTitle = ({tempTitle, editMode, setTempTitle}: {tempTitle: string, editMode:boolean, setTempTitle: (tempTitle: string) => void}) => {
     return (
         <div className='trip-title-container'>
@@ -185,7 +186,6 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
     )
 }
 
-//TODO: Need to add rest of the stop card functionality
 
 export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, index: number, stops: any[], setStops: (stops: any[]) => void }) => {
     const {
@@ -242,16 +242,72 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                 />
             </div>
 
-            <div className="stop-budget-input-wrapper">
-                <span className="currency-symbol">$</span>
-                <input
-                    type="number"
-                    placeholder="Budget"
-                    value={stop.budget || ''}
-                    onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, budget: e.target.value === '' ? null : Number(e.target.value) } : s))}
-                    className="std-input stop-budget-input"
-                />
+            <div className="stop-budget-time-wrapper">
+                <div className="stop-budget-input-container">
+                    <span className="currency-symbol">$</span>
+                    <input
+                        type="number"
+                        placeholder="Budget"
+                        value={stop.budget || ''}
+                        onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, budget: e.target.value === '' ? null : Number(e.target.value) } : s))}
+                        className="std-input stop-budget-input"
+                    />
+                </div>
+                <div className='stop-card-time'>
+                    {stop.type === 'origin' || stop.type === 'hotel' ? (
+                        <>
+                            <label>Depart</label>
+                            <input
+                                type="time"
+                                placeholder='depart'
+                                value={stop.depart || ''}
+                                onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, depart: e.target.value } : s))}
+                                className="std-input stop-card-input"
+                            />
+                        </>
+                    ) : stop.type === 'end' ? (
+                        null
+                    ) : (
+                        <div className='stop-card-break'>
+                            <label>Break</label>
+                            <input
+                                type="number"
+                                placeholder='hours'
+                                value={stop.stayHours || ''}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    setStops(stops.map((s, i) => {
+                                        if (i !== index) return s;
+                                        const h = val || '0';
+                                        const m = s.stayMinutes ? String(s.stayMinutes) : '0';
+                                        const totalStay = (val || s.stayMinutes) ? `${h.padStart(2, '0')}:${m.padStart(2, '0')}` : null;
+                                        return { ...s, stayHours: val, stay: totalStay };
+                                    }));
+                                }}
+                                className="std-input stop-card-input"
+                                />
+                            <input
+                                type="number"
+                                placeholder='minutes'
+                                value={stop.stayMinutes || ''}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    setStops(stops.map((s, i) => {
+                                        if (i !== index) return s;
+                                        const h = s.stayHours ? String(s.stayHours) : '0';
+                                        const m = val || '0';
+                                        const totalStay = (s.stayHours || val) ? `${h.padStart(2, '0')}:${m.padStart(2, '0')}` : null;
+                                        return { ...s, stayMinutes: val, stay: totalStay };
+                                    }));
+                                }}
+                                className="std-input stop-card-input"
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
+
+
 
         </div>
     );
@@ -294,3 +350,10 @@ export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], se
         </DndContext>
     )
 }
+
+//TODO: If origin need to eliminate the Arrial and Break
+//TODO: If End need to eliminate the Break and Depart
+//TODO: If Hotel Need to eliminate the break
+//TODO: Need Delete Functionality for Stops
+//TODO: Need Delte Functioanliy for an entire trip
+//TODO: Need to add new trip 
