@@ -308,5 +308,11 @@
     margin-bottom: 5px;
 }
 
+.stop-delete-button{
+    width: 100%;
+    height: 2rem;
+    margin-top: 1rem;
+}
+
 
 

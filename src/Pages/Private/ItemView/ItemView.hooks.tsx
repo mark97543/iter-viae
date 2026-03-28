@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { createDirectus, rest, authentication, updateItem, readItems, createItem } from '@directus/sdk';
+import { createDirectus, rest, authentication, updateItem, readItems, createItem, deleteItem } from '@directus/sdk';
 
 const client = createDirectus('https://api.wade-usa.com')
   .with(rest())
@@ -136,13 +136,32 @@ export const useItemViewData = () => {
         }
     }, []);
 
+    const deleteStop = useCallback(async (stopId: string | number) => {
+        setUpdating(true);
+        setError(null);
+        try {
+            const token = localStorage.getItem('directus_token');
+            if (token) {
+                client.setToken(token);
+            }
+            await client.request(deleteItem('stop', stopId));
+        } catch (err: any) {
+            console.error("Error deleting stop in Directus:", err);
+            setError(err.message || "Failed to delete stop");
+            throw err;
+        } finally {
+            setUpdating(false);
+        }
+    }, []);
+
     return {
         updating,
         error,
         updateTrip,
         fetchStops,
         updateStopsOrder,
-        fetchTrip
+        fetchTrip,
+        deleteStop
     };
 };
 

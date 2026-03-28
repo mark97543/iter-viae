@@ -316,8 +316,10 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                                 />
                                 <span>M</span>
                             </div>
+                            
                         </div>
                     )}
+                    <button className='std-button stop-delete-button' onClick={() => setStops(stops.filter((_, i) => i !== index))}><img src="/delete.png" alt="Delete" /></button>
                 </div>
             </div>
 

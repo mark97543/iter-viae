@@ -7,7 +7,7 @@ import { useItemViewData } from './ItemView.hooks'
 
 const ItemView = () => {
     const { trips, setTrips, selectedTrip, setSelectedTrip } = useAppState();
-    const { updateTrip, fetchStops, updateStopsOrder, updating, fetchTrip } = useItemViewData();
+    const { updateTrip, fetchStops, updateStopsOrder, updating, fetchTrip, deleteStop } = useItemViewData();
     const [editMode, setEditMode] = useState(false);
     const [stops, setStops] = useState<any[]>([]);
     const [originalStops, setOriginalStops] = useState<any[]>([]);
@@ -50,7 +50,18 @@ const ItemView = () => {
             // Update trip details
             await updateTrip(selectedTrip.id, payload);
 
-            // Save stops order and names
+            // Delete stops that were removed during editing
+            const currentStopIds = stops.map(s => s.id);
+            const stopsToDelete = originalStops.filter(s => !currentStopIds.includes(s.id));
+            
+            for (const stop of stopsToDelete) {
+                // Ensure we don't try to delete a locally generated temp stop just in case
+                if (typeof stop.id !== 'number' || stop.id < 1000000000000) {
+                    await deleteStop(stop.id);
+                }
+            }
+
+            // Save new stops order and details
             await updateStopsOrder(stops, selectedTrip.id);
 
             // Refetch fresh data to compute backend calculations for duration and arrive/depart fields
