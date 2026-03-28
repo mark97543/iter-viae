@@ -173,9 +173,9 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
                         </h3>
                     </div>
                     <div className='stop-card-time'>
-                        <h3><b>Arrive: </b>&nbsp; &nbsp;<i>{stop.arrive || "Not Set"}</i></h3>
-                        <h3><b>Break: </b>&nbsp; &nbsp;<i>{stop.stay || "Not Set"}</i></h3>
-                        <h3><b>Depart: </b>&nbsp; <i>{stop.depart || "Not Set"}</i></h3>
+                        {stop.type === 'origin' ? null : <h3><b>Arrive: </b>&nbsp; &nbsp;<i>{stop.arrive || "Not Set"}</i></h3>}
+                        {stop.type === 'origin' || stop.type === 'hotel' || stop.type === 'end'? null : <h3><b>Break: </b>&nbsp; &nbsp;<i>{stop.stay || "Not Set"}</i></h3>}
+                        {stop.type === 'end' ? null : <h3><b>Depart: </b>&nbsp; <i>{stop.depart || "Not Set"}</i></h3>}
                     </div>
                     <div className='stop-card-budget'>
                         <h3><b>Budget: </b>&nbsp; &nbsp;<i>{stop.budget ? `$${stop.budget}` : "Not Set"}</i></h3>
@@ -351,9 +351,11 @@ export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], se
     )
 }
 
-//TODO: If origin need to eliminate the Arrial and Break
-//TODO: If End need to eliminate the Break and Depart
-//TODO: If Hotel Need to eliminate the break
+
+
+
 //TODO: Need Delete Functionality for Stops
 //TODO: Need Delte Functioanliy for an entire trip
 //TODO: Need to add new trip 
+
+//NEXT Item : Need to add mapbox itesm to trip 
