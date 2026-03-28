@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { createDirectus, rest, authentication, updateItem, readItems } from '@directus/sdk';
+import { createDirectus, rest, authentication, updateItem, readItems, createItem } from '@directus/sdk';
 
 const client = createDirectus('https://api.wade-usa.com')
   .with(rest())
@@ -23,6 +23,27 @@ export const useItemViewData = () => {
         } catch (err: any) {
             console.error("Error updating trip in Directus: [useItemViewData]", err);
             setError(err.message || "Failed to update trip");
+            throw err;
+        } finally {
+            setUpdating(false);
+        }
+    }, []);
+
+    const fetchTrip = useCallback(async (tripId: string) => {
+        setUpdating(true);
+        setError(null);
+        try {
+            const token = localStorage.getItem('directus_token');
+            if (token) {
+                client.setToken(token);
+            }
+            const result = await client.request(readItems('trips_v2', {
+                filter: { id: { _eq: tripId } }
+            }));
+            return result[0];
+        } catch (err: any) {
+            console.error("Error fetching trip from Directus: [useItemViewData]", err);
+            setError(err.message || "Failed to fetch trip");
             throw err;
         } finally {
             setUpdating(false);
@@ -67,7 +88,7 @@ export const useItemViewData = () => {
         }
     }, []);
 
-    const updateStopsOrder = useCallback(async (stops: any[]) => {
+    const updateStopsOrder = useCallback(async (stops: any[], tripId: string) => {
         setUpdating(true);
         setError(null);
         try {
@@ -82,17 +103,27 @@ export const useItemViewData = () => {
                 const minutes = stop.stayMinutes?.padStart(2, '0') || '00';
                 const stayCombined = (stop.stayHours || stop.stayMinutes) ? `${hours}:${minutes}` : null;
 
-                return client.request(updateItem('stop', stop.id, {
+                const payload = {
                     sort: index + 1,
-                    stop_name: stop.stop_name,
+                    stop_name: stop.stop_name || null,
                     budget: stop.budget ? parseFloat(stop.budget) : null,
                     type: stop.type,
-                    location: stop.location,
-                    note: stop.note,
-                    depart: stop.depart,
+                    location: stop.location || null,
+                    note: stop.note || null,
+                    depart: stop.depart || null,
                     stay: stayCombined,
-                    arrive: stop.arrive
-                }));
+                    arrive: stop.arrive || null
+                };
+
+                // If stop ID is a generated timestamp (e.g. greater than 1,000,000,000,000) it means it is a newly added stop
+                if (typeof stop.id === 'number' && stop.id > 1000000000000) {
+                    return client.request(createItem('stop', {
+                        ...payload,
+                        trip_id: tripId
+                    }));
+                } else {
+                    return client.request(updateItem('stop', stop.id, payload));
+                }
             });
             
             await Promise.all(promises);
@@ -110,7 +141,8 @@ export const useItemViewData = () => {
         error,
         updateTrip,
         fetchStops,
-        updateStopsOrder
+        updateStopsOrder,
+        fetchTrip
     };
 };
 

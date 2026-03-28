@@ -7,7 +7,7 @@ import { useItemViewData } from './ItemView.hooks'
 
 const ItemView = () => {
     const { trips, setTrips, selectedTrip, setSelectedTrip } = useAppState();
-    const { updateTrip, fetchStops, updateStopsOrder, updating } = useItemViewData();
+    const { updateTrip, fetchStops, updateStopsOrder, updating, fetchTrip } = useItemViewData();
     const [editMode, setEditMode] = useState(false);
     const [stops, setStops] = useState<any[]>([]);
     const [originalStops, setOriginalStops] = useState<any[]>([]);
@@ -51,9 +51,27 @@ const ItemView = () => {
             await updateTrip(selectedTrip.id, payload);
 
             // Save stops order and names
-            await updateStopsOrder(stops);
+            await updateStopsOrder(stops, selectedTrip.id);
 
-            const updatedTrip = { ...selectedTrip, trip_title: tempTitle, summary: tempSummary, status_date: safeStartDate, status: tempStatus, budget: totalBudget };
+            // Refetch fresh data to compute backend calculations for duration and arrive/depart fields
+            const refreshedTrip = await fetchTrip(selectedTrip.id);
+            const refreshedStops = await fetchStops(selectedTrip.id);
+
+            if (refreshedStops) {
+                setStops(refreshedStops);
+                setOriginalStops([...refreshedStops]);
+            }
+            
+            const updatedTrip = { 
+                ...selectedTrip, 
+                trip_title: tempTitle, 
+                summary: tempSummary, 
+                status_date: safeStartDate, 
+                status: tempStatus, 
+                budget: totalBudget, 
+                duration: refreshedTrip?.duration || selectedTrip.duration 
+            };
+            
             setSelectedTrip(updatedTrip);
 
             const updatedTrips = trips.map((t: any) => t.id === selectedTrip.id ? updatedTrip : t);

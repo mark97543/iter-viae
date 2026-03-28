@@ -25,7 +25,8 @@ export const TripTitle = ({tempTitle, editMode, setTempTitle}: {tempTitle: strin
                     placeholder="Trip Title" 
                     value={tempTitle} 
                     onChange={(e) => setTempTitle(e.target.value)} 
-                    className="std-input title-input"    
+                    className="std-input title-input"  
+                    onFocus={(e) => e.target.select()}  
                 />
             ) : (
                 <h1>{tempTitle}</h1>
@@ -43,6 +44,7 @@ export const TripSummary = ({tempSummary, editMode, setTempSummary}: {tempSummar
                     value={tempSummary}
                     onChange={(e) => setTempSummary(e.target.value)}
                     className="std-input summary-input"
+                    onFocus={(e) => e.target.select()}
                 />
             ) : (
                 <p>{tempSummary}</p>
@@ -63,6 +65,7 @@ export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempSt
                     value={tempStartDate} 
                     onChange={(e) => setTempStartDate(e.target.value)} 
                     className="std-input date-input"    
+                    onFocus={(e) => e.target.select()}
                 />
                 
             ) : (
@@ -225,6 +228,7 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                     value={stop.stop_name}
                     onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, stop_name: e.target.value } : s))}
                     className="std-input stop-card-input"
+                    onFocus={(e) => e.target.select()}
                 />
                 <input
                     type="text"
@@ -232,6 +236,7 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                     value={stop.location}
                     onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, location: e.target.value } : s))}
                     className="std-input stop-card-input"
+                    onFocus={(e) => e.target.select()}
                 />
                 <textarea
                     placeholder="Note"
@@ -239,6 +244,7 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                     onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, note: e.target.value } : s))}
                     className="std-input stop-card-input note-input"
                     rows={5}
+                    onFocus={(e) => e.target.select()}
                 />
             </div>
 
@@ -251,6 +257,7 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                         value={stop.budget || ''}
                         onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, budget: e.target.value === '' ? null : Number(e.target.value) } : s))}
                         className="std-input stop-budget-input"
+                        onFocus={(e) => e.target.select()}
                     />
                 </div>
                 <div className='stop-card-time'>
@@ -263,6 +270,7 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                                 value={stop.depart || ''}
                                 onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, depart: e.target.value } : s))}
                                 className="std-input stop-card-input"
+                                onFocus={(e) => e.target.select()}
                             />
                         </>
                     ) : stop.type === 'end' ? (
@@ -270,38 +278,44 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
                     ) : (
                         <div className='stop-card-break'>
                             <label>Break</label>
-                            <input
-                                type="number"
-                                placeholder='hours'
-                                value={stop.stayHours || ''}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setStops(stops.map((s, i) => {
-                                        if (i !== index) return s;
+                            <div className='stop-card-break-input'>
+                                <input
+                                    type="number"
+                                    placeholder='hours'
+                                    value={stop.stayHours || ''}
+                                    onFocus={(e) => e.target.select()}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setStops(stops.map((s, i) => {
+                                            if (i !== index) return s;
                                         const h = val || '0';
                                         const m = s.stayMinutes ? String(s.stayMinutes) : '0';
                                         const totalStay = (val || s.stayMinutes) ? `${h.padStart(2, '0')}:${m.padStart(2, '0')}` : null;
                                         return { ...s, stayHours: val, stay: totalStay };
                                     }));
                                 }}
-                                className="std-input stop-card-input"
+                                className="std-input stop-card-break-input"
                                 />
-                            <input
-                                type="number"
-                                placeholder='minutes'
-                                value={stop.stayMinutes || ''}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setStops(stops.map((s, i) => {
-                                        if (i !== index) return s;
-                                        const h = s.stayHours ? String(s.stayHours) : '0';
-                                        const m = val || '0';
-                                        const totalStay = (s.stayHours || val) ? `${h.padStart(2, '0')}:${m.padStart(2, '0')}` : null;
-                                        return { ...s, stayMinutes: val, stay: totalStay };
-                                    }));
-                                }}
-                                className="std-input stop-card-input"
-                            />
+                                <span>H:</span>
+                                <input
+                                    type="number"
+                                    placeholder='minutes'
+                                    value={stop.stayMinutes || ''}
+                                    onFocus={(e) => e.target.select()}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setStops(stops.map((s, i) => {
+                                            if (i !== index) return s;
+                                            const h = s.stayHours ? String(s.stayHours) : '0';
+                                            const m = val || '0';
+                                            const totalStay = (s.stayHours || val) ? `${h.padStart(2, '0')}:${m.padStart(2, '0')}` : null;
+                                            return { ...s, stayMinutes: val, stay: totalStay };
+                                        }));
+                                    }}
+                                    className="std-input stop-card-break-input"
+                                />
+                                <span>M</span>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -347,6 +361,7 @@ export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], se
                     )}
                 </div>
             </SortableContext>
+            <button className='std-button add-stop-button' onClick={() => setStops([...stops, { id: Date.now(), stop_name: '', location: '', note: '', depart: '', stay: '', arrive: '', budget: null, type: 'stop' }])}>Add Stop</button>
         </DndContext>
     )
 }
@@ -357,5 +372,6 @@ export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], se
 //TODO: Need Delete Functionality for Stops
 //TODO: Need Delte Functioanliy for an entire trip
 //TODO: Need to add new trip 
+//TODO: Inputs need to select all when focused
 
-//NEXT Item : Need to add mapbox itesm to trip 
+//NEXT Item : Need to make a delete 
