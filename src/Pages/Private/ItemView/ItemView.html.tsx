@@ -97,14 +97,14 @@ export const TripStops = ({ stops, editMode, setStops, onDragEnd }: { stops: any
         <div>
             <h2>Stops</h2>
             <div>
-                {stops && stops.length > 0 ? (
-                    editMode ? (
-                        <TripStopsEdit stops={stops} setStops={setStops} onDragEnd={onDragEnd}/>
-                    ) : (
-                        <TripStopsDisplay stops={stops} />
-                    )
+                {editMode ? (
+                    <TripStopsEdit stops={stops} setStops={setStops} onDragEnd={onDragEnd}/>
                 ) : (
-                    <p>No stops found for this trip.</p>
+                    stops && stops.length > 0 ? (
+                        <TripStopsDisplay stops={stops} />
+                    ) : (
+                        <p>No stops found for this trip.</p>
+                    )
                 )}
             </div>
         </div>
@@ -371,9 +371,9 @@ export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], se
 
 
 
-//TODO: Need Delete Functionality for Stops
+
 //TODO: Need Delte Functioanliy for an entire trip
 //TODO: Need to add new trip 
-//TODO: Inputs need to select all when focused
 
-//NEXT Item : Need to make a delete 
+
+//NEXT Item : Need to be able delete whole trip

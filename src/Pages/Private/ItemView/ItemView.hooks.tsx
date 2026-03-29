@@ -154,6 +154,24 @@ export const useItemViewData = () => {
         }
     }, []);
 
+    const deleteTrip = useCallback(async (tripId: string | number) => {
+        setUpdating(true);
+        setError(null);
+        try {
+            const token = localStorage.getItem('directus_token');
+            if (token) {
+                client.setToken(token);
+            }
+            await client.request(deleteItem('trips_v2', tripId));
+        } catch (err: any) {
+            console.error("Error deleting trip in Directus:", err);
+            setError(err.message || "Failed to delete trip");
+            throw err;
+        } finally {
+            setUpdating(false);
+        }
+    }, []);
+
     return {
         updating,
         error,
@@ -161,7 +179,8 @@ export const useItemViewData = () => {
         fetchStops,
         updateStopsOrder,
         fetchTrip,
-        deleteStop
+        deleteStop,
+        deleteTrip
     };
 };
 

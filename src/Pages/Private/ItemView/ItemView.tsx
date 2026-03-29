@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
 import { TripTitle, TripSummary, TripStatistics, TripStops } from './ItemView.html'
 import { useItemViewData } from './ItemView.hooks'
+import { useNavigate } from 'react-router-dom'
 
 const ItemView = () => {
+    const navigate = useNavigate();
     const { trips, setTrips, selectedTrip, setSelectedTrip } = useAppState();
-    const { updateTrip, fetchStops, updateStopsOrder, updating, fetchTrip, deleteStop } = useItemViewData();
+    const { updateTrip, fetchStops, updateStopsOrder, updating, fetchTrip, deleteStop, deleteTrip } = useItemViewData();
     const [editMode, setEditMode] = useState(false);
     const [stops, setStops] = useState<any[]>([]);
     const [originalStops, setOriginalStops] = useState<any[]>([]);
@@ -94,6 +96,22 @@ const ItemView = () => {
         }
     }
 
+    const onDeleteTrip = async () => {
+        if (!selectedTrip) return;
+        const confirmDelete = window.confirm("Are you sure you want to delete this trip and all its stops? This action cannot be undone.");
+        if (!confirmDelete) return;
+
+        try {
+            await deleteTrip(selectedTrip.id);
+            setTrips(trips.filter((t: any) => t.id !== selectedTrip.id));
+            setSelectedTrip(null);
+            setEditMode(false);
+            navigate('/dashboard');
+        } catch (err) {
+            alert("There was an error deleting the trip. Please try again.");
+        }
+    };
+
     useEffect(() => {
         if (selectedTrip?.id && typeof fetchStops === 'function') {
             fetchStops(selectedTrip.id).then((data: any) => {
@@ -143,7 +161,7 @@ const ItemView = () => {
                         <button className='std-button' onClick={() => onSave()} disabled={updating}>
                             {updating ? 'Saving...' : 'Save Trip'}
                         </button>
-                        <button className='std-button'>Delete Trip</button>
+                        <button className='std-button' onClick={() => onDeleteTrip()} disabled={updating}>Delete Trip</button>
                         <button className='std-button' onClick={() => onCancel()} disabled={updating}>Cancel</button>
                     </>
                 ) : (
