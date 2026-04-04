@@ -35,13 +35,18 @@ const Dashboard = () => {
     return (
         <div className="dashboard">
             <h1>Select a Trip</h1>
-            <input 
-                type="text" 
-                className='std-input search-input' 
-                placeholder="Search" 
-                value={searchTerm}
-                onChange={handleSearch}
-            />
+            <div className='dashboard-search-container'>
+                <input 
+                    type="text" 
+                    className='std-input search-input' 
+                    placeholder="Search" 
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    onFocus={(e) => e.target.select()}
+                />
+                <button className='std-button new-trip-button'>New Trip</button>
+            </div>
+
 
             <div className='dashboard-grid'>
                 {filteredTrips.map((trip) => {
@@ -70,8 +75,4 @@ const Dashboard = () => {
 
 export default Dashboard
 
-//TODO: Need to Create New Trip Button 
-//TODO: Need to Create Sliders to Filter Distances and Times 
-//TODO: Need to make Sort for Completed Trips 
-//TODO: Need to filter for draft trips
-//TODO: Need to Filter For Planned Trips  
+

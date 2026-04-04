@@ -1,0 +1,6 @@
+- Make it so there is auto logout. The user seems to event thought he token expires to have the logout option in the top right corner.
+- In Dashboard, Have sliders for searching the distance and time. 
+- In  Dashboard, Need to add a feature to filter completed trips. 
+- Need to figure out how to handle post trip. (Maybe when complted go to a difference page)
+- In Dashboard, Need to create filter for draft trips
+- In Dashboard, Need to create filter for planned trips (Maybe sort in order)

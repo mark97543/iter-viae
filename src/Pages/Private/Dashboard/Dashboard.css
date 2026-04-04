@@ -125,3 +125,20 @@
 .completed-status{
     color: var(--color-primary, #1f2937);
 }
+
+.dashboard-search-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0;
+}
+
+.new-trip-button{
+    width: 140px;
+    height: 35px;
+    align-self: flex-start;
+}

@@ -372,8 +372,8 @@ export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], se
 
 
 
-//TODO: Need Delte Functioanliy for an entire trip
+
 //TODO: Need to add new trip 
 
 
-//NEXT Item : Need to be able delete whole trip
+//NEXT Item : Need to be able to add a new trip 
