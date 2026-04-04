@@ -112,7 +112,9 @@ export const useItemViewData = () => {
                     note: stop.note || null,
                     depart: stop.depart || null,
                     stay: stayCombined,
-                    arrive: stop.arrive || null
+                    arrive: stop.arrive || null,
+                    distance_to_next_stop: stop.distance_to_next_stop ?? null,
+                    time_to_next_stop: stop.time_to_next_stop != null ? String(stop.time_to_next_stop) : null
                 };
 
                 // If stop ID is a generated timestamp (e.g. greater than 1,000,000,000,000) it means it is a newly added stop
@@ -184,3 +186,49 @@ export const useItemViewData = () => {
     };
 };
 
+/**
+ * Executes the mapbox api to pull distance and time between stops. Returns array with the stop number in order. 
+ * This function allows infinate number of stops by breaking them up and takes in a array of the stop with lon,lat
+ * Will need to flip then as they are in goolge format seperated by a coma. 
+ * @param stops Array of stops to pull distance and time between. 
+ * @returns Array of stops with distance and time between stops. 
+ */
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+const BASE_URL = 'https://api.mapbox.com/directions/v5/mapbox/driving';
+
+export const getRouteData = async (stringCoordinates: string[]) => {
+  // 1. Convert "lat,lng" strings to [lng, lat] arrays
+  const formattedCoords = stringCoordinates.map(str => {
+    const [lat, lng] = str.split(',').map(Number);
+    return [lng, lat]; // Flip to Longitude, Latitude for Mapbox
+  });
+
+  //const MAX_PER_BATCH = 25;
+  let allDistances = [];
+  let allDurations = [];
+
+  // 2. Batch and Fetch
+  for (let i = 0; i < formattedCoords.length - 1; i += 24) {
+    const batch = formattedCoords.slice(i, i + 25);
+    
+    // Create the semicolon-separated string Mapbox wants: "lng,lat;lng,lat"
+    const coordString = batch.map(c => c.join(',')).join(';');
+    
+    const url = `${BASE_URL}/${coordString}?access_token=${MAPBOX_TOKEN}&annotations=distance,duration`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.code === 'Ok') {
+        const legs = data.routes[0].legs;
+        allDistances.push(...legs.map((l: { distance: number }) => l.distance)); // in meters
+        allDurations.push(...legs.map((l: { duration: number }) => l.duration)); // in seconds
+      }
+    } catch (error) {
+      console.error("Batching failed:", error);
+    }
+  }
+
+  return { distances: allDistances, durations: allDurations };
+};

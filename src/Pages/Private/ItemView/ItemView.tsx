@@ -3,7 +3,7 @@ import { useAppState } from '../../../Contexts/StateContext'
 import { useState, useEffect } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
 import { TripTitle, TripSummary, TripStatistics, TripStops } from './ItemView.html'
-import { useItemViewData } from './ItemView.hooks'
+import { useItemViewData, getRouteData} from './ItemView.hooks'
 import { useNavigate } from 'react-router-dom'
 
 const ItemView = () => {
@@ -40,33 +40,55 @@ const ItemView = () => {
 
     const onSave = async () => {
         if (!selectedTrip) return;
+
         try {
-            const safeStartDate = tempStartDate === "" ? null : tempStartDate;
-
-            //Sum Budget Items 
-            const totalBudget = stops.reduce((acc, stop) => acc + (Number(stop.budget) || 0), 0);
+            // 1. Run Mapbox and pull in route data
+            const stringCoordinates = stops.map(stop => stop.location);
+            const routeData = await getRouteData(stringCoordinates);
             
-            //Create Payload for Data
-            const payload = { trip_title: tempTitle, summary: tempSummary, status_date: safeStartDate, status: tempStatus, budget: totalBudget };
+            // 2. Prepare Data & Sum Budget
+            const safeStartDate = tempStartDate === "" ? null : tempStartDate;
+            const totalBudget = stops.reduce((acc, stop) => acc + (Number(stop.budget) || 0), 0);
 
-            // Update trip details
-            await updateTrip(selectedTrip.id, payload);
+            // 3. Map Route Data (Legs) to the "Next Stop" Logic
+            // Mapbox returns (N-1) legs for N stops.
+            const stopsWithRouteData = stops.map((stop, index) => {
+                // Check if there is a leg available for this stop (Next Stop exists)
+                // If we are at the very last stop, there is no "next" leg.
+                const hasNextLeg = index < stops.length - 1;
 
-            // Delete stops that were removed during editing
+                return {
+                    ...stop,
+                    distance_to_next_stop: hasNextLeg ? (routeData.distances[index] || 0) : 0,
+                    time_to_next_stop: hasNextLeg ? (routeData.durations[index] || 0) : 0
+                };
+            });
+
+            // 4. Update the Parent Trip Details
+            const tripPayload = { 
+                trip_title: tempTitle, 
+                summary: tempSummary, 
+                status_date: safeStartDate, 
+                status: tempStatus, 
+                budget: totalBudget 
+            };
+            
+            await updateTrip(selectedTrip.id, tripPayload);
+
+            // 5. Delete removed stops
             const currentStopIds = stops.map(s => s.id);
             const stopsToDelete = originalStops.filter(s => !currentStopIds.includes(s.id));
             
             for (const stop of stopsToDelete) {
-                // Ensure we don't try to delete a locally generated temp stop just in case
                 if (typeof stop.id !== 'number' || stop.id < 1000000000000) {
                     await deleteStop(stop.id);
                 }
             }
 
-            // Save new stops order and details
-            await updateStopsOrder(stops, selectedTrip.id);
+            // 6. Save stops with the "Distance to Next" metadata
+            await updateStopsOrder(stopsWithRouteData, selectedTrip.id);
 
-            // Refetch fresh data to compute backend calculations for duration and arrive/depart fields
+            // 7. Refetch and Sync
             const refreshedTrip = await fetchTrip(selectedTrip.id);
             const refreshedStops = await fetchStops(selectedTrip.id);
 
@@ -82,7 +104,8 @@ const ItemView = () => {
                 status_date: safeStartDate, 
                 status: tempStatus, 
                 budget: totalBudget, 
-                duration: refreshedTrip?.duration || selectedTrip.duration 
+                duration: refreshedTrip?.duration || selectedTrip.duration,
+                distance: refreshedTrip?.distance || selectedTrip.distance
             };
             
             setSelectedTrip(updatedTrip);
@@ -91,10 +114,12 @@ const ItemView = () => {
             setTrips(updatedTrips);
 
             setEditMode(false);
+
         } catch (err) {
+            console.error("Save Error:", err);
             alert("There was an error updating the trip. Please try again.");
         }
-    }
+    };
 
     const onDeleteTrip = async () => {
         if (!selectedTrip) return;

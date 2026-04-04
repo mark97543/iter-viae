@@ -4,3 +4,5 @@
 - Need to figure out how to handle post trip. (Maybe when complted go to a difference page)
 - In Dashboard, Need to create filter for draft trips
 - In Dashboard, Need to create filter for planned trips (Maybe sort in order)
+- DB need to set it up to go through stops and delete any items that do no have a coresponding trip ID. 
+- Set user to stay logged in to about 6 hours. 

@@ -369,11 +369,3 @@ export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], se
 }
 
 
-
-
-
-
-//TODO: Need to add new trip 
-
-
-//NEXT Item : Need to be able to add a new trip 
