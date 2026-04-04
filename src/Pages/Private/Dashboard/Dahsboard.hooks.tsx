@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { createDirectus, rest, readItems, authentication } from '@directus/sdk';
+import { createDirectus, rest, readItems, createItem, authentication } from '@directus/sdk';
 
 const client = createDirectus('https://api.wade-usa.com')
   .with(rest())
@@ -67,3 +67,25 @@ export const convertMinutesToHoursAndMinutes = (minutes: number) => {
     const remainingMinutes = minutes % 60;
     return { hours, minutes: remainingMinutes };
 };
+
+/**
+ * Function to create a new trip
+ * @param {string} userId - The ID of the user creating the trip
+ * @returns {tripId: string, error: string | null}
+ */
+export const createNewTrip = async (userId: string) => {
+    try {
+        const token = localStorage.getItem('directus_token');
+        if (token) {
+            client.setToken(token);
+        }
+        const result = await client.request(createItem('trips_v2', {
+            user_created: userId,
+            status: 'draft'
+        })) as any;
+        return { tripId: result.id, error: null };
+    } catch (err: any) {
+        console.error("Error creating new trip: [createNewTrip]", err);
+        return { tripId: null, error: err.message || "Failed to create new trip" };
+    }
+}

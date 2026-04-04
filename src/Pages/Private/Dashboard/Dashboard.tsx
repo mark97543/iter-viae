@@ -1,6 +1,6 @@
 import './Dashboard.css'
 import {useEffect, useState} from 'react';
-import {useDashboardData, convertMinutesToHoursAndMinutes} from './Dahsboard.hooks';
+import {useDashboardData, convertMinutesToHoursAndMinutes, createNewTrip} from './Dahsboard.hooks';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../../../Contexts/StateContext';
 import { useAuth } from '../../../Contexts/AuthContext';
@@ -31,6 +31,27 @@ const Dashboard = () => {
         setFilteredTrips(trips.filter((trip) => trip.trip_title.toLowerCase().includes(e.target.value.toLowerCase())));
     };
 
+    const handleNewTrip = () => {
+        if (user && user.id) {
+            createNewTrip(user.id).then((result) => {
+                if (result.tripId) {
+                    setSelectedTrip({
+                        id: result.tripId,
+                        user_created: user.id,
+                        status: 'draft',
+                        status_date: new Date().toISOString(),
+                        trip_title: 'New Trip',
+                        summary: '',
+                        budget: 0,
+                        duration: 0,
+                        distance: 0,
+                        
+                    });
+                    navigate(`/trip/${result.tripId}`);
+                }
+            });
+        }
+    }
 
     return (
         <div className="dashboard">
@@ -44,7 +65,7 @@ const Dashboard = () => {
                     onChange={handleSearch}
                     onFocus={(e) => e.target.select()}
                 />
-                <button className='std-button new-trip-button'>New Trip</button>
+                <button className='std-button new-trip-button' onClick={handleNewTrip}>New Trip</button>
             </div>
 
 
