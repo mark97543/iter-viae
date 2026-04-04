@@ -1,4 +1,5 @@
 import {convertMinutesToHoursAndMinutes} from '../Dashboard/Dahsboard.hooks'
+import {convertSecondsToHoursMinutes, convertMetersToMiles} from './ItemView.hooks'
 import {
   DndContext, 
   closestCenter,
@@ -158,32 +159,38 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
     return(
         <div className="stops-list">
             {stops.map((stop, index) => (
-                <div key={stop.id || index} className="stop-card">
-                    <div className="stop-card-type">
-                        <img src={stopType.find((type) => type.value === stop.type)?.icon} alt={stop.type} />
+                <>
+                    <div key={stop.id || index} className="stop-card">
+                        <div className="stop-card-type">
+                            <img src={stopType.find((type) => type.value === stop.type)?.icon} alt={stop.type} />
+                        </div>
+                        <div className="stop-card-info">
+                            <h3>{stop.stop_name}</h3>
+                            <h3>
+                                <button className="location-button" onClick={() => handleCopy(stop)} title="Copy Info">
+                                    {stop.location 
+                                        ? stop.location.split(',').map((num: string) => parseFloat(num).toFixed(5)).join(', ')
+                                        : "No Location"}
+                                </button>
+                            </h3>
+                            <h3 className="stop-card-note">
+                                <b>Note: </b><i>{stop.note || "None"}</i> 
+                            </h3>
+                        </div>
+                        <div className='stop-card-time'>
+                            {stop.type === 'origin' ? null : <h3><b>Arrive: </b>&nbsp; &nbsp;<i>{stop.arrive || "Not Set"}</i></h3>}
+                            {stop.type === 'origin' || stop.type === 'hotel' || stop.type === 'end'? null : <h3><b>Break: </b>&nbsp; &nbsp;<i>{stop.stay || "Not Set"}</i></h3>}
+                            {stop.type === 'end' ? null : <h3><b>Depart: </b>&nbsp; <i>{stop.depart || "Not Set"}</i></h3>}
+                        </div>
+                        <div className='stop-card-budget'>
+                            <h3><b>Budget: </b>&nbsp; &nbsp;<i>{stop.budget ? `$${stop.budget}` : "Not Set"}</i></h3>
+                        </div>
                     </div>
-                    <div className="stop-card-info">
-                        <h3>{stop.stop_name}</h3>
-                        <h3>
-                            <button className="location-button" onClick={() => handleCopy(stop)} title="Copy Info">
-                                {stop.location 
-                                    ? stop.location.split(',').map((num: string) => parseFloat(num).toFixed(5)).join(', ')
-                                    : "No Location"}
-                            </button>
-                        </h3>
-                        <h3 className="stop-card-note">
-                            <b>Note: </b><i>{stop.note || "None"}</i> 
-                        </h3>
+                    <div className="stop-card-distance-time">
+                        <h4><b>Distance to Next Stop: </b>&nbsp; &nbsp;<i>{stop.distance_to_next_stop ? convertMetersToMiles(stop.distance_to_next_stop) : "Not Set"}</i></h4>
+                        <h4><b>Time to Next Stop: </b>&nbsp; &nbsp;<i>{stop.time_to_next_stop ? convertSecondsToHoursMinutes(stop.time_to_next_stop) : "Not Set"}</i></h4>
                     </div>
-                    <div className='stop-card-time'>
-                        {stop.type === 'origin' ? null : <h3><b>Arrive: </b>&nbsp; &nbsp;<i>{stop.arrive || "Not Set"}</i></h3>}
-                        {stop.type === 'origin' || stop.type === 'hotel' || stop.type === 'end'? null : <h3><b>Break: </b>&nbsp; &nbsp;<i>{stop.stay || "Not Set"}</i></h3>}
-                        {stop.type === 'end' ? null : <h3><b>Depart: </b>&nbsp; <i>{stop.depart || "Not Set"}</i></h3>}
-                    </div>
-                    <div className='stop-card-budget'>
-                        <h3><b>Budget: </b>&nbsp; &nbsp;<i>{stop.budget ? `$${stop.budget}` : "Not Set"}</i></h3>
-                    </div>
-                </div>
+                </>
             ))}
         </div>
     )

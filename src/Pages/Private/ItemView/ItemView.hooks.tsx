@@ -232,3 +232,23 @@ export const getRouteData = async (stringCoordinates: string[]) => {
 
   return { distances: allDistances, durations: allDurations };
 };
+
+/** Takes time in seconds and converts to XXh xxm 
+ * @param timeInSeconds Time in seconds to convert. 
+ * @returns String in format of XXh xxm
+*/
+export const convertSecondsToHoursMinutes = (timeInSeconds: number) => {
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
+    return `${hours}h ${minutes}m`;
+};
+
+/**
+ * Takes meters and converts to miles in format XX.X mi
+ * @param meters Distance in meters to convert. 
+ * @returns String in format of XX.X mi
+ */
+export const convertMetersToMiles = (meters: number) => {
+    const miles = meters / 1609.34;
+    return `${miles.toFixed(1)} mi`;
+};
