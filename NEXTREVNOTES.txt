@@ -1,4 +1,3 @@
-- Make it so there is auto logout. The user seems to event thought he token expires to have the logout option in the top right corner.
 - In Dashboard, Have sliders for searching the distance and time. 
 - In  Dashboard, Need to add a feature to filter completed trips. 
 - Need to figure out how to handle post trip. (Maybe when complted go to a difference page)
@@ -8,4 +7,7 @@
 - Need to Make a print version 
 - Need a mobile view. 
 - If hotel is selected the day + 1 will apear in the ditance to next stop 
-- Start Project Tertius
+
+
+Quality of Life Future: 
+- Make it so there is auto logout. The user seems to event thought he token expires to have the logout option in the top right corner.

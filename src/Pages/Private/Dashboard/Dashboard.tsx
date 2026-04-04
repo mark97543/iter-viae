@@ -6,6 +6,7 @@ import { useAppState } from '../../../Contexts/StateContext';
 import { useAuth } from '../../../Contexts/AuthContext';
 import { DashStatus } from './Dashboar.html';
 import {convertMetersToMiles} from '../ItemView/ItemView.hooks';
+import { useIsMobile } from '../../../hooks/mobileview';
 
 const Dashboard = () => {
     const { fetchTrips } = useDashboardData();
@@ -14,6 +15,8 @@ const Dashboard = () => {
     const { user } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredTrips, setFilteredTrips] = useState(trips);
+    const isMobile = useIsMobile();
+
 
 
     useEffect(() => {
@@ -66,7 +69,9 @@ const Dashboard = () => {
                     onChange={handleSearch}
                     onFocus={(e) => e.target.select()}
                 />
-                <button className='std-button new-trip-button' onClick={handleNewTrip}>New Trip</button>
+                {!isMobile &&
+                    <button className='std-button new-trip-button' onClick={handleNewTrip}>New Trip</button>
+                }
             </div>
 
 
