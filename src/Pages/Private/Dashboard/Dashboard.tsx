@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../../../Contexts/StateContext';
 import { useAuth } from '../../../Contexts/AuthContext';
 import { DashStatus } from './Dashboar.html';
+import {convertMetersToMiles} from '../ItemView/ItemView.hooks';
 
 const Dashboard = () => {
     const { fetchTrips } = useDashboardData();
@@ -80,8 +81,8 @@ const Dashboard = () => {
                             <div className="trip-stats">
                                 {/* TODO: Need to make sure trip stats are saved after calculation */}
                                 <p><b>Budget</b> <br/>${trip.budget || '0.00'}</p>
-                                <p><b>Duration</b> <br/>{convertMinutesToHoursAndMinutes(trip.duration).hours}h {convertMinutesToHoursAndMinutes(trip.duration).minutes}m</p>
-                                <p><b>Distance</b> <br/>{trip.distance || '0'}mi</p>                                
+                                <p><b>Duration</b> <br/>{convertMinutesToHoursAndMinutes(trip.duration).hours}h {convertMinutesToHoursAndMinutes(trip.duration).minutes.toFixed(0)}m</p>
+                                <p><b>Distance</b> <br/>{convertMetersToMiles(trip.distance) || '0mi'}</p>                                
                             </div>
                             <p className='trip-summary'>{trip.summary}</p>
                             <DashStatus status={trip.status} date={trip.status_date}/>

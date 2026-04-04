@@ -1,4 +1,3 @@
-import {convertMinutesToHoursAndMinutes} from '../Dashboard/Dahsboard.hooks'
 import {convertSecondsToHoursMinutes, convertMetersToMiles} from './ItemView.hooks'
 import {
   DndContext, 
@@ -58,8 +57,8 @@ export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempSt
     return(
         <div className='statistics'>
             <h3>Budget: <br></br>${selectedTrip?.budget}</h3>
-            <h3>Duration: <br></br>{convertMinutesToHoursAndMinutes(selectedTrip?.duration || 0).hours}h {convertMinutesToHoursAndMinutes(selectedTrip?.duration || 0).minutes}m</h3>
-            <h3>Distance: <br></br>{selectedTrip?.distance}mi</h3>
+            <h3>Duration: <br></br>{convertSecondsToHoursMinutes(selectedTrip?.duration || 0)}</h3>
+            <h3>Distance: <br></br>{convertMetersToMiles(selectedTrip?.distance || 0)}</h3>
             {editMode ? (
                 <input 
                     type="date" 
@@ -156,6 +155,11 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
         navigator.clipboard.writeText(textToCopy);
     };
 
+    const formatTime = (timeStr?: string) => {
+        if (!timeStr) return "Not Set";
+        return timeStr.split(':').slice(0, 2).join(':');
+    };
+
     return(
         <div className="stops-list">
             {stops.map((stop, index) => (
@@ -178,18 +182,20 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
                             </h3>
                         </div>
                         <div className='stop-card-time'>
-                            {stop.type === 'origin' ? null : <h3><b>Arrive: </b>&nbsp; &nbsp;<i>{stop.arrive || "Not Set"}</i></h3>}
-                            {stop.type === 'origin' || stop.type === 'hotel' || stop.type === 'end'? null : <h3><b>Break: </b>&nbsp; &nbsp;<i>{stop.stay || "Not Set"}</i></h3>}
-                            {stop.type === 'end' ? null : <h3><b>Depart: </b>&nbsp; <i>{stop.depart || "Not Set"}</i></h3>}
+                            {stop.type === 'origin' ? null : <h3><b>Arrive: </b>&nbsp; &nbsp;<i>{formatTime(stop.arrive)}</i></h3>}
+                            {stop.type === 'origin' || stop.type === 'hotel' || stop.type === 'end'? null : <h3><b>Break: </b>&nbsp; &nbsp;<i>{formatTime(stop.stay)}</i></h3>}
+                            {stop.type === 'end' ? null : <h3><b>Depart: </b>&nbsp; <i>{formatTime(stop.depart)}</i></h3>}
                         </div>
                         <div className='stop-card-budget'>
-                            <h3><b>Budget: </b>&nbsp; &nbsp;<i>{stop.budget ? `$${stop.budget}` : "Not Set"}</i></h3>
+                            <h3><b>Budget: </b>&nbsp; &nbsp;<i>{stop.budget ? `$${stop.budget}` : "$0"}</i></h3>
                         </div>
                     </div>
-                    <div className="stop-card-distance-time">
-                        <h4><b>Distance to Next Stop: </b>&nbsp; &nbsp;<i>{stop.distance_to_next_stop ? convertMetersToMiles(stop.distance_to_next_stop) : "Not Set"}</i></h4>
-                        <h4><b>Time to Next Stop: </b>&nbsp; &nbsp;<i>{stop.time_to_next_stop ? convertSecondsToHoursMinutes(stop.time_to_next_stop) : "Not Set"}</i></h4>
-                    </div>
+                    {stop.type !== 'end' ? (
+                        <div className="stop-card-distance-time">
+                            <h4><b>Distance to Next Stop: </b>&nbsp; &nbsp;<i>{stop.distance_to_next_stop ? convertMetersToMiles(stop.distance_to_next_stop) : "Not Set"}</i></h4>
+                            <h4><b>Time to Next Stop: </b>&nbsp; &nbsp;<i>{stop.time_to_next_stop ? convertSecondsToHoursMinutes(stop.time_to_next_stop) : "Not Set"}</i></h4>
+                        </div>
+                    ) : null}
                 </>
             ))}
         </div>

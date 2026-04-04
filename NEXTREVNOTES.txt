@@ -5,4 +5,6 @@
 - In Dashboard, Need to create filter for draft trips
 - In Dashboard, Need to create filter for planned trips (Maybe sort in order)
 - DB need to set it up to go through stops and delete any items that do no have a coresponding trip ID. 
-- Set user to stay logged in to about 6 hours. 
+- Need to Make a print version 
+- Need a mobile view. 
+- If hotel is selected the day + 1 will apear in the ditance to next stop 

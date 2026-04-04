@@ -52,17 +52,75 @@ const ItemView = () => {
 
             // 3. Map Route Data (Legs) to the "Next Stop" Logic
             // Mapbox returns (N-1) legs for N stops.
+            let cumulativeDepartureSeconds: number | null = null;
+
             const stopsWithRouteData = stops.map((stop, index) => {
                 // Check if there is a leg available for this stop (Next Stop exists)
                 // If we are at the very last stop, there is no "next" leg.
                 const hasNextLeg = index < stops.length - 1;
 
+                //Convert the stay to seconds from hh:mm text to seconds
+                const stayParts = stop.stay ? stop.stay.split(':') : ['0', '0'];
+                const stayInSeconds = (Number(stayParts[0]) * 3600) + (Number(stayParts[1] || 0) * 60);
+                
+                let arrivaltime: string | null = null;
+                let departuretime: string | null = null;
+
+                // 1. Calculate arrival time
+                if (stop.type !== 'origin') {
+                    if (cumulativeDepartureSeconds !== null) {
+                        const travelTimeSeconds = routeData.durations[index - 1] || 0;
+                        const totalArrivalSeconds = cumulativeDepartureSeconds + travelTimeSeconds;
+                        
+                        const aHours = Math.floor(totalArrivalSeconds / 3600) % 24;
+                        const aMinutes = Math.floor((totalArrivalSeconds % 3600) / 60);
+                        arrivaltime = `${String(aHours).padStart(2, '0')}:${String(aMinutes).padStart(2, '0')}`;
+                        
+                        // We set cumulative to this arrival time temporarily until we calculate departure
+                        cumulativeDepartureSeconds = totalArrivalSeconds; 
+                    }
+                }
+
+                // 2. Calculate departure time
+                if (stop.type === 'origin' || stop.type === 'hotel') {
+                    departuretime = stop.depart;
+                    arrivaltime = null;
+
+                    if (departuretime) {
+                        const [hours, minutes] = departuretime.split(':').map(Number);
+                        cumulativeDepartureSeconds = (hours * 3600) + (minutes * 60);
+                    }
+                } else if (stop.type === 'end') {
+                    // end stop doesn't have a departure time that matters for the route
+                    departuretime = null;
+                } else {
+                    // Regular stop - departure is arrival + stay
+                    if (arrivaltime && cumulativeDepartureSeconds !== null) {
+                        const totalDepartureSeconds = cumulativeDepartureSeconds + stayInSeconds;
+                        const dHours = Math.floor(totalDepartureSeconds / 3600) % 24;
+                        const dMinutes = Math.floor((totalDepartureSeconds % 3600) / 60);
+                        departuretime = `${String(dHours).padStart(2, '0')}:${String(dMinutes).padStart(2, '0')}`;
+                        cumulativeDepartureSeconds = totalDepartureSeconds;
+                    }
+                }
+
+                const sHours = Math.floor(stayInSeconds / 3600);
+                const sMinutes = Math.floor((stayInSeconds % 3600) / 60);
+                const formattedStay = `${String(sHours).padStart(2, '0')}:${String(sMinutes).padStart(2, '0')}`;
+
                 return {
                     ...stop,
                     distance_to_next_stop: hasNextLeg ? (routeData.distances[index] || 0) : 0,
-                    time_to_next_stop: hasNextLeg ? (routeData.durations[index] || 0) : 0
+                    time_to_next_stop: hasNextLeg ? (routeData.durations[index] || 0) : 0,
+                    stay: formattedStay,
+                    arrive: arrivaltime || stop.arrive,
+                    depart: departuretime || stop.depart
                 };
             });
+
+            //3.5 Calculate total distance and time
+            const totalDistance = stopsWithRouteData.reduce((acc, stop) => acc + (stop.distance_to_next_stop || 0), 0);
+            const totalTime = stopsWithRouteData.reduce((acc, stop) => acc + (stop.time_to_next_stop || 0), 0);
 
             // 4. Update the Parent Trip Details
             const tripPayload = { 
@@ -70,7 +128,9 @@ const ItemView = () => {
                 summary: tempSummary, 
                 status_date: safeStartDate, 
                 status: tempStatus, 
-                budget: totalBudget 
+                budget: totalBudget,
+                distance: totalDistance, //This is in meters
+                duration: totalTime //This is in seconds
             };
             
             await updateTrip(selectedTrip.id, tripPayload);
