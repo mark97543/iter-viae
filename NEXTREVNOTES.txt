@@ -8,3 +8,4 @@
 - Need to Make a print version 
 - Need a mobile view. 
 - If hotel is selected the day + 1 will apear in the ditance to next stop 
+- Start Project Tertius
