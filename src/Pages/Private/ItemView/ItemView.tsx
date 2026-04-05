@@ -84,7 +84,9 @@ const ItemView = () => {
                 // 2. Calculate departure time
                 if (stop.type === 'origin' || stop.type === 'hotel') {
                     departuretime = stop.depart;
-                    arrivaltime = null;
+                    if (stop.type === 'origin') {
+                        arrivaltime = null;
+                    }
 
                     if (departuretime) {
                         const [hours, minutes] = departuretime.split(':').map(Number);
@@ -217,6 +219,11 @@ const ItemView = () => {
 
     }, [selectedTrip?.id, fetchStops]);
 
+    const handlePrint = () => {
+        navigate('/print');
+        //This is temporary as we will need to just set up the prin parts later. 
+    }
+
     return (
         <div className='item-view-container'>
             <TripTitle tempTitle={tempTitle} editMode={editMode} setTempTitle={setTempTitle} />
@@ -250,7 +257,10 @@ const ItemView = () => {
                         <button className='std-button' onClick={() => onCancel()} disabled={updating}>Cancel</button>
                     </>
                 ) : (
-                    <button className='std-button' onClick={() => { setEditMode(true); setOriginalStops([...stops]); }}>Edit Trip</button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem'}}>
+                        <button className='std-button' onClick={() => { setEditMode(true); setOriginalStops([...stops]); }}>Edit Trip</button>
+                        <button className='std-button' onClick={()=>handlePrint()}>Print Trip</button>
+                    </div>
                 )}
 
 
@@ -260,3 +270,40 @@ const ItemView = () => {
 }
 
 export default ItemView
+
+//TODO: Need to make print trip feature in button
+
+// import { useRef } from 'react';
+// import { useReactToPrint } from 'react-to-print';
+// import { TripManifest } from './TripManifest';
+
+// const ItemView = ({ selectedTrip, stops }) => {
+//   const componentRef = useRef<HTMLDivElement>(null);
+
+//   const handlePrint = useReactToPrint({
+//     contentRef: componentRef, // Points to the hidden component
+//     documentTitle: `${selectedTrip?.trip_title}_Itinerary`,
+//   });
+
+//   return (
+//     <div>
+//       {/* 1. YOUR ACTUAL UI (Visible on screen) */}
+//       <div className="ui-container">
+//         <button onClick={() => handlePrint()} className="bg-green-600 p-3 rounded">
+//           Print Manifest 🖨️
+//         </button>
+//         {/* ... rest of your Mapbox and Spreadsheet UI ... */}
+//       </div>
+
+//       {/* 2. THE HIDDEN PRINT COMPONENT */}
+//       {/* We wrap it in a div that is hidden on screen but visible during print */}
+//       <div style={{ display: 'none' }}>
+//         <TripManifest 
+//           ref={componentRef} 
+//           trip={selectedTrip} 
+//           stops={stops} 
+//         />
+//       </div>
+//     </div>
+//   );
+// };

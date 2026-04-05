@@ -1,0 +1,39 @@
+
+@media print{
+    @page {
+        margin: 0px;
+    }
+    html, body{
+        margin:0px!important;
+        padding:0px!important;
+        height: 100%;
+        width: 100%;
+    }
+    .print-container{
+        margin-left: auto;
+        margin-right:auto;
+        display: block;
+        width:100%;
+        background-color: white;
+        color: black!important;
+        margin:0px;
+        padding:0px;
+    }
+    .Header_wrapper{
+        display: none!important;
+    }
+}
+
+/* Styles for your "Real-time Preview" on screen */
+.print-container {
+    background-color: white;
+    color: black;
+    padding: 20px;
+    border: 1px solid #ccc;
+    /* Optional: make it look like paper on screen */
+    width: 3.5in;
+    min-height: 5.5in;
+    margin: 10px auto;
+    border:3px solid black;
+    border-radius: 20px;
+}

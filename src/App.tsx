@@ -12,6 +12,7 @@ import Dashboard from './Pages/Private/Dashboard/Dashboard'
 import NotFound from './Pages/Public/NotFound/NotFound'
 import ItemView from './Pages/Private/ItemView/ItemView'
 import MobileItemView from './Pages/Private/MobileItemView/MobileItemView'
+import Print from './Pages/Private/ItemView/Print/Print'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
           <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/print" element={<Print />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
