@@ -69,19 +69,20 @@ const CardZero =({selectedTrip}: {selectedTrip: any})=>{
     return(
         <div className='mobile-view-card-zero'>
             <div className='mobile-view-next-stop-card'>
+                <h2>Overview</h2>
                 <h3>{selectedTrip?.trip_title}</h3>
-                <h4>Planned: {selectedTrip?.planned_date}</h4>
+                <h4>Planned: <span>{selectedTrip?.planned_date || 'Not Set'}</span></h4>
                 <div className='mobile-view-next-stop-card-content'>
-                    {selectedTrip?.summary}
+                    {selectedTrip?.summary || 'No summary provided.'}
                 </div>
                 
             </div>
             <div className='mobile-view-stats'>
-                <h3>Stats</h3>
+                <h3>Trip Stats</h3>
                 <div className='mobile-view-stats-content'>
-                    <h4>Budget: ${selectedTrip?.budget}</h4>
-                    <h4>Duration: {convertSecondsToHoursMinutes(selectedTrip?.duration)}</h4> 
-                    <h4 className='mobile-view-stats-content-distance'>Distance: {convertMetersToMiles(selectedTrip?.distance)}</h4>
+                    <h4>Budget: <span>${selectedTrip?.budget || 0}</span></h4>
+                    <h4>Duration: <span>{convertSecondsToHoursMinutes(selectedTrip?.duration || 0)}</span></h4> 
+                    <h4>Distance: <span>{convertMetersToMiles(selectedTrip?.distance || 0)}</span></h4>
                 </div>
             </div>
         </div>
@@ -91,30 +92,56 @@ const CardZero =({selectedTrip}: {selectedTrip: any})=>{
 //Remaining cards HTML
 const Cards = ({stops, cardNumber}: {stops: any[], cardNumber: number})=>{
     const stop = stops[cardNumber-1]
+
+    const googleMaps = (location:any) =>{
+        const url = `https://www.google.com/maps?saddr=&daddr=${location}`;
+        window.open(url, '_blank')
+    }
+
+    const formatTime = (timeStr?: string) => {
+        if (!timeStr) return "Not Set";
+        return timeStr.split(':').slice(0, 2).join(':');
+    };
+
     return(
         <div className='mobile-view-cards'>
             <div key={stop?.id} className='mobile-view-card '>
-                <h3>{stop?.stop_name}</h3>
-                {cardNumber !== 1 ? <h4>Arrival: {stop?.arrive}</h4> : null}
-                {cardNumber !== 1 && cardNumber !== stops.length ? <h4>Break: {stop?.stay}</h4> : null}
+                <h2>Stop {cardNumber}</h2>
+                <h3>{stop?.stop_name || 'Unnamed'}</h3>
+                {cardNumber !== 1 ? <h4>Arrival: <span>{formatTime(stop?.arrive)}</span></h4> : null}
+                {cardNumber !== 1 && cardNumber !== stops.length ? <h4>Break: <span>{formatTime(stop?.stay)}</span></h4> : null}
+                
+                <div style={{ height: '8px' }} /> {/* Visual spacer */}
+
                 <h4 
                     onClick={() => { if(stop?.location) navigator.clipboard.writeText(stop.location) }}
+                    style={{ cursor: 'pointer' }}
                 >
-                    Location: {stop?.location ? stop.location.split(',').map((num: string) => parseFloat(num).toFixed(5)).join(', ') : 'Not Set'}
+                    Location: 
+                    <span style={{ color: '#3b82f6', textDecoration: 'underline' }}>
+                        {stop?.location ? stop.location.split(',').map((num: string) => parseFloat(num).toFixed(5)).join(', ') : 'Not Set'}
+                    </span>
                 </h4>
-                <p style={{textAlign: 'center'}}><i>Touch to copy location</i></p>
-                <h4>Notes:</h4>
-                <h4 className='mobile-view-card-notes'>{stop?.note ? stop.note : 'No Notes'}</h4>
+                <p className='location-copy-hint'>Touch coordinates to copy</p>
+                
+                {stop?.note && (
+                    <div className='mobile-view-card-notes'>
+                        {stop.note}
+                    </div>
+                )}
             </div>
-            <div className='mobile-view-stats-normal'>
-                <h3>Next Stop</h3>
-                <div className='mobile-view-stats-content-stops'>
-                    <h4>Departure: {stop?.depart}</h4>
-                    <h4>Distance: {convertMetersToMiles(stop?.distance_to_next_stop)}</h4>
-                    <h4>Duration: {convertSecondsToHoursMinutes(stop?.time_to_next_stop)}</h4>
+            
+            {(cardNumber !== stops.length) && (
+                <div className='mobile-view-stats-normal'>
+                    <h3>To Next Stop</h3>
+                    <div className='mobile-view-stats-content-stops'>
+                        <h4>Departure: <span>{formatTime(stop?.depart)}</span></h4>
+                        <h4>Distance: <span>{convertMetersToMiles(stop?.distance_to_next_stop)}</span></h4>
+                        <h4>Duration: <span>{convertSecondsToHoursMinutes(stop?.time_to_next_stop)}</span></h4>
+                    </div>
+                    <button className='std-button google-maps-button' onClick={()=>googleMaps(stop?.location)}>Get Directions</button>
                 </div>
-                <button className='std-button google-maps-button'>Directions to Next Stop</button>
-            </div>
+            )}
             
         </div>
     )
