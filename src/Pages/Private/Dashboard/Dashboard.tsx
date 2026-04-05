@@ -80,7 +80,11 @@ const Dashboard = () => {
                     return (
                         <div key={trip.id} className="trip-card" onClick={() => {
                             setSelectedTrip(trip);
-                            navigate(`/trip/${trip.id}`);
+                            if (isMobile) {
+                                navigate(`/trip_mobile/${trip.id}`);
+                            } else {
+                                navigate(`/trip/${trip.id}`);
+                            }
                         }}>
                             <h2>{trip.trip_title}</h2>
                             <div className="trip-stats">
