@@ -72,6 +72,11 @@ export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempSt
                 <h3>Start Date: <br></br>{tempStartDate || "Not Set"}</h3>
             )}
             {editMode ? (
+                <h3>End Date: <br></br><i>(Computed on save)</i></h3>
+            ) : (
+                <h3>End Date: <br></br>{selectedTrip?.end_date || "Not Set"}</h3>
+            )}
+            {editMode ? (
                 <div>
                    <select 
                         value={tempStatus} 
@@ -160,44 +165,57 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
         return timeStr.split(':').slice(0, 2).join(':');
     };
 
+    let currentDay = 1;
+
     return(
         <div className="stops-list">
-            {stops.map((stop, index) => (
-                <>
-                    <div key={stop.id || index} className="stop-card">
-                        <div className="stop-card-type">
-                            <img src={stopType.find((type) => type.value === stop.type)?.icon} alt={stop.type} />
+            {stops.map((stop, index) => {
+                const nextLegDay = stop.type === 'hotel' ? currentDay + 1 : currentDay;
+
+                const card = (
+                    <div key={stop.id || index}>
+                        <div className="stop-card">
+                            <div className="stop-card-type">
+                                <img src={stopType.find((type) => type.value === stop.type)?.icon} alt={stop.type} />
+                            </div>
+                            <div className="stop-card-info">
+                                <h3>{stop.stop_name}</h3>
+                                <h3>
+                                    <button className="location-button" onClick={() => handleCopy(stop)} title="Copy Info">
+                                        {stop.location 
+                                            ? stop.location.split(',').map((num: string) => parseFloat(num).toFixed(5)).join(', ')
+                                            : "No Location"}
+                                    </button>
+                                </h3>
+                                <h3 className="stop-card-note" style={{ whiteSpace: 'pre-wrap' }}>
+                                    <b>Note: </b><i>{stop.note || "None"}</i> 
+                                </h3>
+                            </div>
+                            <div className='stop-card-time'>
+                                {stop.type === 'origin' ? null : <h3><b>Arrive: </b>&nbsp; &nbsp;<i>{formatTime(stop.arrive)}</i></h3>}
+                                {stop.type === 'origin' || stop.type === 'hotel' || stop.type === 'end'? null : <h3><b>Break: </b>&nbsp; &nbsp;<i>{formatTime(stop.stay)}</i></h3>}
+                                {stop.type === 'end' ? null : <h3><b>Depart: </b>&nbsp; <i>{formatTime(stop.depart)}</i></h3>}
+                            </div>
+                            <div className='stop-card-budget'>
+                                <h3><b>Budget: </b>&nbsp; &nbsp;<i>{stop.budget ? `$${stop.budget}` : "$0"}</i></h3>
+                            </div>
                         </div>
-                        <div className="stop-card-info">
-                            <h3>{stop.stop_name}</h3>
-                            <h3>
-                                <button className="location-button" onClick={() => handleCopy(stop)} title="Copy Info">
-                                    {stop.location 
-                                        ? stop.location.split(',').map((num: string) => parseFloat(num).toFixed(5)).join(', ')
-                                        : "No Location"}
-                                </button>
-                            </h3>
-                            <h3 className="stop-card-note" style={{ whiteSpace: 'pre-wrap' }}>
-                                <b>Note: </b><i>{stop.note || "None"}</i> 
-                            </h3>
-                        </div>
-                        <div className='stop-card-time'>
-                            {stop.type === 'origin' ? null : <h3><b>Arrive: </b>&nbsp; &nbsp;<i>{formatTime(stop.arrive)}</i></h3>}
-                            {stop.type === 'origin' || stop.type === 'hotel' || stop.type === 'end'? null : <h3><b>Break: </b>&nbsp; &nbsp;<i>{formatTime(stop.stay)}</i></h3>}
-                            {stop.type === 'end' ? null : <h3><b>Depart: </b>&nbsp; <i>{formatTime(stop.depart)}</i></h3>}
-                        </div>
-                        <div className='stop-card-budget'>
-                            <h3><b>Budget: </b>&nbsp; &nbsp;<i>{stop.budget ? `$${stop.budget}` : "$0"}</i></h3>
-                        </div>
+                        {stop.type !== 'end' ? (
+                            <div className="stop-card-distance-time">
+                                <h4><b>Travel Day: </b>&nbsp; &nbsp;<i>Day {nextLegDay}</i></h4>
+                                <h4><b>Distance to Next Stop: </b>&nbsp; &nbsp;<i>{stop.distance_to_next_stop ? convertMetersToMiles(stop.distance_to_next_stop) : "Not Set"}</i></h4>
+                                <h4><b>Time to Next Stop: </b>&nbsp; &nbsp;<i>{stop.time_to_next_stop ? convertSecondsToHoursMinutes(stop.time_to_next_stop) : "Not Set"}</i></h4>
+                            </div>
+                        ) : null}
                     </div>
-                    {stop.type !== 'end' ? (
-                        <div className="stop-card-distance-time">
-                            <h4><b>Distance to Next Stop: </b>&nbsp; &nbsp;<i>{stop.distance_to_next_stop ? convertMetersToMiles(stop.distance_to_next_stop) : "Not Set"}</i></h4>
-                            <h4><b>Time to Next Stop: </b>&nbsp; &nbsp;<i>{stop.time_to_next_stop ? convertSecondsToHoursMinutes(stop.time_to_next_stop) : "Not Set"}</i></h4>
-                        </div>
-                    ) : null}
-                </>
-            ))}
+                );
+
+                if (stop.type === 'hotel') {
+                    currentDay += 1;
+                }
+
+                return card;
+            })}
         </div>
     )
 }

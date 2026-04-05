@@ -1,13 +1,16 @@
 import './ItemView.css'
 import { useAppState } from '../../../Contexts/StateContext'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
 import { TripTitle, TripSummary, TripStatistics, TripStops } from './ItemView.html'
 import { useItemViewData, getRouteData} from './ItemView.hooks'
 import { useNavigate } from 'react-router-dom'
+import { useReactToPrint } from 'react-to-print';
+import Print from './Print/Print';
 
 const ItemView = () => {
     const navigate = useNavigate();
+    const componentRef = useRef<HTMLDivElement>(null);
     const { trips, setTrips, selectedTrip, setSelectedTrip } = useAppState();
     const { updateTrip, fetchStops, updateStopsOrder, updating, fetchTrip, deleteStop, deleteTrip } = useItemViewData();
     const [editMode, setEditMode] = useState(false);
@@ -49,6 +52,19 @@ const ItemView = () => {
             // 2. Prepare Data & Sum Budget
             const safeStartDate = tempStartDate === "" ? null : tempStartDate;
             const totalBudget = stops.reduce((acc, stop) => acc + (Number(stop.budget) || 0), 0);
+            
+            // Calculate end date based on hotels
+            const numberOfHotels = stops.filter(stop => stop.type === 'hotel').length;
+            let computedEndDate: string | null = safeStartDate;
+            if (safeStartDate) {
+                const [year, month, day] = safeStartDate.split('-').map(Number);
+                const start = new Date(year, month - 1, day);
+                start.setDate(start.getDate() + numberOfHotels);
+                const newYear = start.getFullYear();
+                const newMonth = String(start.getMonth() + 1).padStart(2, '0');
+                const newDay = String(start.getDate()).padStart(2, '0');
+                computedEndDate = `${newYear}-${newMonth}-${newDay}`;
+            }
 
             // 3. Map Route Data (Legs) to the "Next Stop" Logic
             // Mapbox returns (N-1) legs for N stops.
@@ -129,6 +145,7 @@ const ItemView = () => {
                 trip_title: tempTitle, 
                 summary: tempSummary, 
                 status_date: safeStartDate, 
+                end_date: computedEndDate,
                 status: tempStatus, 
                 budget: totalBudget,
                 distance: totalDistance, //This is in meters
@@ -164,6 +181,7 @@ const ItemView = () => {
                 trip_title: tempTitle, 
                 summary: tempSummary, 
                 status_date: safeStartDate, 
+                end_date: computedEndDate,
                 status: tempStatus, 
                 budget: totalBudget, 
                 duration: refreshedTrip?.duration || selectedTrip.duration,
@@ -215,14 +233,12 @@ const ItemView = () => {
             });
         }
 
-
-
     }, [selectedTrip?.id, fetchStops]);
 
-    const handlePrint = () => {
-        navigate('/print');
-        //This is temporary as we will need to just set up the prin parts later. 
-    }
+    const handlePrint = useReactToPrint({
+        contentRef: componentRef,
+        documentTitle: `${selectedTrip?.trip_title || 'Trip'}_Itinerary`,
+    });
 
     return (
         <div className='item-view-container'>
@@ -265,45 +281,16 @@ const ItemView = () => {
 
 
             </div>
+            
+            {/* Hidden Print Container */}
+            <div style={{ display: 'none' }}>
+                <div ref={componentRef}>
+                    <Print />
+                </div>
+            </div>
         </div>
     )
 }
 
 export default ItemView
 
-//TODO: Need to make print trip feature in button
-
-// import { useRef } from 'react';
-// import { useReactToPrint } from 'react-to-print';
-// import { TripManifest } from './TripManifest';
-
-// const ItemView = ({ selectedTrip, stops }) => {
-//   const componentRef = useRef<HTMLDivElement>(null);
-
-//   const handlePrint = useReactToPrint({
-//     contentRef: componentRef, // Points to the hidden component
-//     documentTitle: `${selectedTrip?.trip_title}_Itinerary`,
-//   });
-
-//   return (
-//     <div>
-//       {/* 1. YOUR ACTUAL UI (Visible on screen) */}
-//       <div className="ui-container">
-//         <button onClick={() => handlePrint()} className="bg-green-600 p-3 rounded">
-//           Print Manifest 🖨️
-//         </button>
-//         {/* ... rest of your Mapbox and Spreadsheet UI ... */}
-//       </div>
-
-//       {/* 2. THE HIDDEN PRINT COMPONENT */}
-//       {/* We wrap it in a div that is hidden on screen but visible during print */}
-//       <div style={{ display: 'none' }}>
-//         <TripManifest 
-//           ref={componentRef} 
-//           trip={selectedTrip} 
-//           stops={stops} 
-//         />
-//       </div>
-//     </div>
-//   );
-// };

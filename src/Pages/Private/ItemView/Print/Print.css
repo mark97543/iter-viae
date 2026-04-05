@@ -6,22 +6,25 @@
     html, body{
         margin:0px!important;
         padding:0px!important;
-        height: 100%;
+        height: auto;
         width: 100%;
     }
     .print-container{
         margin-left: auto;
         margin-right:auto;
-        display: block;
         width:100%;
         background-color: white;
         color: black!important;
-        margin:0px;
         padding:0px;
     }
     .Header_wrapper{
         display: none!important;
     }
+    .print-page-2,.print-page {
+        /* Centers the 7.5in card vertically on a standard 11in tall piece of paper */
+        margin-top: 1.75in !important; 
+    }
+
 }
 
 /* Styles for your "Real-time Preview" on screen */
@@ -29,11 +32,242 @@
     background-color: white;
     color: black;
     padding: 20px;
-    border: 1px solid #ccc;
-    /* Optional: make it look like paper on screen */
-    width: 3.5in;
-    min-height: 5.5in;
-    margin: 10px auto;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:20px;
+    width: 100%;
+    align-content: center;
+}
+
+.print-container h3{
+    color: black;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-align: center;
+    font-size: 18pt;
+}
+
+.print-container h4{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-align: left;
+    color: black;
+    text-decoration: none;
+    font-weight: normal;
+    text-transform: none;
+    break-inside:auto;
+    font-size: 10pt;
+}
+
+.print-container h4 b,
+.print-container h4 strong {
+    font-size: 10pt;
+}
+
+.cover-page h4{
+    text-align: center;
+}
+
+.print-page {
+    display: flex;
+    flex-direction: column;
+    width: 4.5in;
+    height: 7.5in;
     border:3px solid black;
     border-radius: 20px;
+    padding:10px;
+    margin: 0 auto; /* Centers the cards horizontally */
+    page-break-after: always;
+    break-after: page;
+}
+
+.itinerary-page {
+    break-before: page;
+}
+
+.page-number{   
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+.page-number h4{
+    text-align: right!important;
+}
+
+.print-notes-section{
+    margin-top: 20px;
+}
+
+.print-notes-header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left!important;
+    margin-top: 20px;
+}
+
+.print-note-lines{
+    height: 10px;
+    border-bottom: 1px solid black;
+    border-bottom-style: dotted;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.print-cover-stats {
+    display: flex;
+    justify-content: space-between;
+    background-color: #fafafa;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin: 10px 0;
+}
+
+.print-cover-stats-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.print-cover-stats-item:not(:last-child) {
+    border-right: 1px solid #e0e0e0;
+}
+
+.print-cover-stats-label {
+    font-size: 8pt;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.print-cover-stats-value {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-top: 2px;
+}
+
+.print-cover-summary {
+    margin-top: 6px;
+    background-color: #fcfcfc;
+    border-left: 4px solid #3498db;
+    padding: 10px 15px;
+    border-radius: 0 6px 6px 0;
+    box-shadow: inset 0 0 0 1px #eee;
+    text-align: left;
+    min-height: 1in;
+    max-height: 2.5in;
+    overflow: hidden;
+}
+
+.print-cover-summary h4 {
+    font-size: 9pt;
+    line-height: 1.4;
+    color: #444;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+
+
+.print-line-container{
+    display: flex;
+    align-items: center; /* Vertically centers the lines with the text */
+    width: 100%;
+    margin: 6px 0;
+}
+
+.print-line{
+    flex-grow: 1;         /* Makes the line take up all remaining space */
+    height: 1px;          /* The thickness of your line */
+    background-color: black;
+}
+
+.print-line-text{
+    padding: 0 15px;      /* Creates the "gap" around the text */
+    font-weight: bold;
+    text-transform: none;
+    font-size: 11pt;      /* Standard print size */
+    white-space: nowrap;  /* Keeps the text on one line */
+}
+
+.print-stop-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-left: 4px solid #2c3e50;
+    border-radius: 4px;
+    padding: 4px 6px;
+    background-color: #fafafa;
+    min-width: 100%;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+}
+
+.print-stop-top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.print-stop-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 150px;
+    text-align: left;
+}
+
+.print-stop-name {
+    font-size: 10pt !important;
+    text-align: left !important;
+    margin: 0px 0px 1px 0px !important;
+    padding: 0px !important;
+    font-weight: bold !important;
+    color: #333 !important;
+}
+
+.print-stop-budget {
+    font-size: 8pt;
+    color: #555;
+    margin-top: 0px;
+}
+
+.print-stop-times {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    font-size: 8pt;
+    gap: 1px;
+    background: #eef2f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid #e0e6ed;
+    color: #444;
+}
+
+.print-stop-notes {
+    width: 100%;
+    margin-top: 4px;
+    padding-top: 3px;
+    border-top: 1px dashed #ccc;
+    font-size: 8pt;
+    color: #444;
+    text-align: left;
+    white-space: pre-wrap;
+}
+
+.print-stop{
+    margin-top: 10px;
 }

@@ -44,6 +44,7 @@ const Dashboard = () => {
                         user_created: user.id,
                         status: 'draft',
                         status_date: new Date().toISOString(),
+                        end_date: null,
                         trip_title: 'New Trip',
                         summary: '',
                         budget: 0,
@@ -94,7 +95,7 @@ const Dashboard = () => {
                                 <p><b>Distance</b> <br/>{convertMetersToMiles(trip.distance) || '0mi'}</p>                                
                             </div>
                             <p className='trip-summary'>{trip.summary}</p>
-                            <DashStatus status={trip.status} date={trip.status_date}/>
+                            <DashStatus status={trip.status} date={trip.status_date} end_date={trip.end_date}/>
                         </div>
                     )
                 })}

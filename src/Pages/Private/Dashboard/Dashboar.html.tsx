@@ -1,5 +1,5 @@
 
-export const DashStatus = ({status, date}: {status:string, date:string}) =>{
+export const DashStatus = ({status, date, end_date}: {status:string, date:string, end_date?: string}) =>{
 
     const statusColor = () =>{
         switch(status){
@@ -20,10 +20,10 @@ export const DashStatus = ({status, date}: {status:string, date:string}) =>{
                 <p className="draft-status">Draft</p>
             )}
             {status === 'planned' && (
-                <p className="planned-status">Planned for {date}</p>
+                <p className="planned-status">Planned: {date}{end_date ? ` to ${end_date}` : ''}</p>
             )}
             {status === 'completed' && (
-                <p className="completed-status">Completed on {date}</p>
+                <p className="completed-status">Completed: {date}{end_date ? ` to ${end_date}` : ''}</p>
             )}
             {status === null && (
                 <p className="draft-status">Draft</p>
