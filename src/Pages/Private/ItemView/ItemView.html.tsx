@@ -47,7 +47,7 @@ export const TripSummary = ({tempSummary, editMode, setTempSummary}: {tempSummar
                     onFocus={(e) => e.target.select()}
                 />
             ) : (
-                <p>{tempSummary}</p>
+                <p style={{ whiteSpace: 'pre-wrap' }}>{tempSummary}</p>
             )}
         </div>
     )
@@ -177,7 +177,7 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
                                         : "No Location"}
                                 </button>
                             </h3>
-                            <h3 className="stop-card-note">
+                            <h3 className="stop-card-note" style={{ whiteSpace: 'pre-wrap' }}>
                                 <b>Note: </b><i>{stop.note || "None"}</i> 
                             </h3>
                         </div>
