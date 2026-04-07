@@ -1,18 +1,7 @@
-- In Dashboard, Have sliders for searching the distance and time. 
-- In  Dashboard, Need to add a feature to filter completed trips. 
+
 - Need to figure out how to handle post trip. (Maybe when complted go to a difference page)
-- In Dashboard, Need to create filter for draft trips
-- In Dashboard, Need to create filter for planned trips (Maybe sort in order)
-- DB need to set it up to go through stops and delete any items that do no have a coresponding trip ID. 
-
 - Need to Add Rating System
-- Mobile Trip Cards, need to clean up formating a little bit. THe h3 are spread out a little too much 
-- Mobile View, Add one click arrival and departture to record actual times 
 - Desktop View, Post trip allow the inputing of actual budget. 
-- Trip Edit. The start on origin does ot default to the depart option. We should have this default to the origin. 
-    Possibly only allow one origin and one end. 
-- Trip Edit, Limit the note size to make it work with the print feature. 
-
 
 
 Quality of Life Future: 

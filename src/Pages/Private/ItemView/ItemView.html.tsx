@@ -1,3 +1,4 @@
+//#region Imports
 import {convertSecondsToHoursMinutes, convertMetersToMiles} from './ItemView.hooks'
 import {
   DndContext, 
@@ -14,8 +15,16 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
+//#endregion
 
-
+//#region Trip Title Component
+/**
+ * Trip Title Component
+ * @param tempTitle - The title of the trip
+ * @param editMode - Whether the trip is in edit mode
+ * @param setTempTitle - Function to set the title of the trip
+ * @returns 
+ */
 export const TripTitle = ({tempTitle, editMode, setTempTitle}: {tempTitle: string, editMode:boolean, setTempTitle: (tempTitle: string) => void}) => {
     return (
         <div className='trip-title-container'>
@@ -34,7 +43,16 @@ export const TripTitle = ({tempTitle, editMode, setTempTitle}: {tempTitle: strin
         </div>       
     )
 }
+//#endregion
 
+//#region Trip Summary Component
+/**
+ * Trip Summary Component
+ * @param tempSummary - The summary of the trip
+ * @param editMode - Whether the trip is in edit mode
+ * @param setTempSummary - Function to set the summary of the trip
+ * @returns 
+ */
 export const TripSummary = ({tempSummary, editMode, setTempSummary}: {tempSummary: string, editMode:boolean, setTempSummary: (tempSummary: string) => void}) => {
     return (
         <div>
@@ -52,7 +70,19 @@ export const TripSummary = ({tempSummary, editMode, setTempSummary}: {tempSummar
         </div>
     )
 }
+//#endregion
 
+//#region Trip Statistics Component
+/**
+ * Trip Statistics Component
+ * @param selectedTrip - The selected trip
+ * @param editMode - Whether the trip is in edit mode
+ * @param tempStartDate - The start date of the trip
+ * @param setTempStartDate - Function to set the start date of the trip
+ * @param tempStatus - The status of the trip
+ * @param setTempStatus - Function to set the status of the trip
+ * @returns 
+ */
 export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempStartDate, tempStatus, setTempStatus}: {selectedTrip: any, editMode:boolean, tempStartDate: string, setTempStartDate: (tempStartDate: string) => void, tempStatus: string, setTempStatus: (tempStatus: string) => void}) =>{
     return(
         <div className='statistics'>
@@ -95,7 +125,17 @@ export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempSt
         </div>
     )
 }
+//#endregion
 
+//#region Trip Stops Component
+/**
+ * Trip Stops Component
+ * @param stops - The stops of the trip
+ * @param editMode - Whether the trip is in edit mode
+ * @param setStops - Function to set the stops of the trip
+ * @param onDragEnd - Function to handle the end of a drag
+ * @returns 
+ */
 export const TripStops = ({ stops, editMode, setStops, onDragEnd }: { stops: any[], editMode: boolean, setStops: (stops: any[]) => void, onDragEnd: (event: any) => void }) =>{
 
     return(
@@ -115,8 +155,22 @@ export const TripStops = ({ stops, editMode, setStops, onDragEnd }: { stops: any
         </div>
     )
 }
+//#endregion
 
+//#region Stop Type
+/**
+ * Stop Type
+ * @param type - The type of the stop
+ * @param value - The value of the stop
+ * @param icon - The icon of the stop
+ * @returns 
+ */
 const stopType = [
+    {
+        type: 'Waypoint',
+        value: 'waypoint',
+        icon: '/TypeIcons/waypoint.png'
+    },
     {
         type: 'Origin',
         value: 'origin',
@@ -143,17 +197,19 @@ const stopType = [
         icon: '/TypeIcons/hotel.png'
     },
     {
-        type: 'Waypoint',
-        value: 'waypoint',
-        icon: '/TypeIcons/waypoint.png'
-    },
-    {
         type: 'End',
         value: 'end',
         icon: '/TypeIcons/end.png'
     }
 ]
+//#endregion
 
+//#region Trip Stops Display Component
+/**
+ * Trip Stops Display Component
+ * @param stops - The stops of the trip
+ * @returns 
+ */
 export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
     const handleCopy = (stop: any) => {
         const textToCopy = `${stop.location ? `${stop.location}` : ''}`;
@@ -219,8 +275,17 @@ export const TripStopsDisplay = ({ stops }: { stops: any[] }) =>{
         </div>
     )
 }
+//#endregion
 
-
+//#region Sortable Stop Card
+/**
+ * Sortable Stop Card
+ * @param stop - The stop to display
+ * @param index - The index of the stop
+ * @param stops - The stops of the trip
+ * @param setStops - Function to set the stops of the trip
+ * @returns 
+ */
 export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, index: number, stops: any[], setStops: (stops: any[]) => void }) => {
     const {
         attributes,
@@ -359,7 +424,16 @@ export const SortableStopCard = ({ stop, index, stops, setStops }: { stop: any, 
         </div>
     );
 };
+//#endregion
 
+//#region Trip Stops Edit Component
+/**
+ * Trip Stops Edit Component
+ * @param stops - The stops of the trip
+ * @param setStops - Function to set the stops of the trip
+ * @param onDragEnd - Function to handle the end of a drag
+ * @returns 
+ */
 export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], setStops: (stops: any[]) => void, onDragEnd: (event: any) => void }) =>{
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -398,5 +472,5 @@ export const TripStopsEdit = ({ stops, setStops, onDragEnd }: { stops: any[], se
         </DndContext>
     )
 }
-
+//#endregion
 
