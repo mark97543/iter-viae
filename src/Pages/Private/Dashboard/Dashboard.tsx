@@ -89,7 +89,6 @@ const Dashboard = () => {
                         }}>
                             <h2>{trip.trip_title}</h2>
                             <div className="trip-stats">
-                                {/* TODO: Need to make sure trip stats are saved after calculation */}
                                 <p><b>Budget</b> <br/>${trip.budget || '0.00'}</p>
                                 <p><b>Duration</b> <br/>{convertMinutesToHoursAndMinutes(trip.duration).hours}h {convertMinutesToHoursAndMinutes(trip.duration).minutes.toFixed(0)}m</p>
                                 <p><b>Distance</b> <br/>{convertMetersToMiles(trip.distance) || '0mi'}</p>                                

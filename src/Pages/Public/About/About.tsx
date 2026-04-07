@@ -99,4 +99,3 @@ const About = () => {
 
 export default About;
 
-//TODO: We will need to reformat this to be more project oriented. 

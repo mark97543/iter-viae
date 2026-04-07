@@ -1,8 +1,7 @@
 import './ItemView.css'
 import { useAppState } from '../../../Contexts/StateContext'
 import { useState, useEffect, useRef } from 'react'
-import { arrayMove } from '@dnd-kit/sortable'
-import { TripTitle, TripSummary, TripStatistics, TripStops } from './ItemView.html'
+import { TripTitle, TripSummary, TripStatistics } from './ItemView.html'
 import { useItemViewData, getRouteData} from './ItemView.hooks'
 import { useNavigate } from 'react-router-dom'
 import { useReactToPrint } from 'react-to-print';
@@ -20,17 +19,6 @@ const ItemView = () => {
     const [tempSummary, setTempSummary] = useState(selectedTrip?.summary);
     const [tempStartDate, setTempStartDate] = useState(selectedTrip?.status_date);
     const [tempStatus, setTempStatus] = useState(selectedTrip?.status);
-
-    const handleDragEnd = (event: any) => {
-        const { active, over } = event;
-        if (active.id !== over.id) {
-            setStops((items) => {
-                const oldIndex = items.findIndex((item) => item.id === active.id);
-                const newIndex = items.findIndex((item) => item.id === over.id);
-                return arrayMove(items, oldIndex, newIndex);
-            });
-        }
-    };
 
     const onCancel = () => {
         setTempTitle(selectedTrip?.trip_title);
@@ -261,7 +249,7 @@ const ItemView = () => {
                 />
             </div>
 
-            <TripStops stops={stops} editMode={editMode} setStops={setStops} onDragEnd={handleDragEnd} />
+            {/* TODO: This is where the table will go*/}
 
             <div className='item-button-container'>
                 {editMode ? (
