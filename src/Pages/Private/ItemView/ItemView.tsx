@@ -1,7 +1,7 @@
 import './ItemView.css'
 import { useAppState } from '../../../Contexts/StateContext'
 import { useState, useEffect, useRef } from 'react'
-import { TripTitle, TripSummary, TripStatistics } from './ItemView.html'
+import { TripTitle, TripSummary, TripStatistics, StopTable } from './ItemView.html'
 import { useItemViewData, getRouteData} from './ItemView.hooks'
 import { useNavigate } from 'react-router-dom'
 import { useReactToPrint } from 'react-to-print';
@@ -249,7 +249,7 @@ const ItemView = () => {
                 />
             </div>
 
-            {/* TODO: This is where the table will go*/}
+            <StopTable stops={stops} editMode={editMode} setStops={setStops} selectedTrip={selectedTrip}/>
 
             <div className='item-button-container'>
                 {editMode ? (

@@ -199,8 +199,11 @@ const BASE_URL = 'https://api.mapbox.com/directions/v5/mapbox/driving';
 export const getRouteData = async (stringCoordinates: string[]) => {
   // 1. Convert "lat,lng" strings to [lng, lat] arrays
   const formattedCoords = stringCoordinates.map(str => {
+    if (!str || typeof str !== 'string' || !str.includes(',')) {
+      return [0, 0];
+    }
     const [lat, lng] = str.split(',').map(Number);
-    return [lng, lat]; // Flip to Longitude, Latitude for Mapbox
+    return [lng || 0, lat || 0]; // Flip to Longitude, Latitude for Mapbox
   });
 
   //const MAX_PER_BATCH = 25;

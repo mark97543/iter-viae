@@ -72,7 +72,7 @@ export const TripSummary = ({tempSummary, editMode, setTempSummary}: {tempSummar
 export const TripStatistics = ({selectedTrip, editMode, tempStartDate, setTempStartDate, tempStatus, setTempStatus}: {selectedTrip: any, editMode:boolean, tempStartDate: string, setTempStartDate: (tempStartDate: string) => void, tempStatus: string, setTempStatus: (tempStatus: string) => void}) =>{
     return(
         <div className='statistics'>
-            <h3>Budget: <br></br>${selectedTrip?.budget}</h3>
+            <h3>Budget: <br></br>${selectedTrip?.budget != null ? Number(selectedTrip.budget).toFixed(2) : '0.00'}</h3>
             <h3>Duration: <br></br>{convertSecondsToHoursMinutes(selectedTrip?.duration || 0)}</h3>
             <h3>Distance: <br></br>{convertMetersToMiles(selectedTrip?.distance || 0)}</h3>
             {editMode ? (
@@ -160,4 +160,109 @@ const stopType = [
 ]
 //#endregion
 
+//#region StopTable
+/**
+ * StopTable
+ * @param stops - The stops of the trip
+ * @param editMode - Whether the trip is in edit mode
+ * @param setStops - Function to set the stops of the trip
+ * @returns 
+ */
+export const StopTable = ({stops, editMode, setStops, selectedTrip}:{stops: any[], editMode: boolean, setStops: (stops: any[]) => void, selectedTrip: any}) =>{
 
+    const moveStop = (index: number, direction: 'up' | 'down') => {
+        if (direction === 'up' && index > 0) {
+            const newStops = [...stops];
+            [newStops[index - 1], newStops[index]] = [newStops[index], newStops[index - 1]];
+            setStops(newStops);
+        } else if (direction === 'down' && index < stops.length - 1) {
+            const newStops = [...stops];
+            [newStops[index + 1], newStops[index]] = [newStops[index], newStops[index + 1]];
+            setStops(newStops);
+        }
+    };
+
+    const formatLocation = (loc: string) => {
+        if (!loc) return '';
+        const parts = loc.split(',');
+        if (parts.length === 2) {
+            const lat = parseFloat(parts[0]);
+            const lng = parseFloat(parts[1]);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+            }
+        }
+        return loc;
+    };
+
+    const stopTypeDropdown = (stop: any, index: number) => {
+        return (
+            <select 
+                value={stop.type} 
+                onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, type: e.target.value } : s))}
+                className="std-input type-select"
+                style={{ marginTop: '0.5rem', width: '100%', textTransform: 'capitalize' }}
+            >
+                {stopType.map((type) => (
+                    <option key={type.value} value={type.value}>{type.type}</option>
+                ))}
+            </select>
+        )
+    }
+
+    return(
+        <div className='stop-table'>
+            <table>
+                <caption><h3>Stops</h3></caption>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Type</th>
+                        <th>Stop Name</th>
+                        <th>Location</th>
+                        <th>Budget</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {stops.map((stop, index) => (
+                        <tr key={index}>
+                            <td>
+                                {editMode ? (
+                                    <div style={{ display: 'flex', gap: '0.25rem', flexDirection: 'column', alignItems: 'center' }}>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => moveStop(index, 'up')} 
+                                            disabled={index === 0}
+                                            style={{ padding: '0 0.4rem', cursor: index === 0 ? 'not-allowed' : 'pointer', fontSize: '0.8rem' }}
+                                        >
+                                            ▲
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => moveStop(index, 'down')} 
+                                            disabled={index === stops.length - 1}
+                                            style={{ padding: '0 0.4rem', cursor: index === stops.length - 1 ? 'not-allowed' : 'pointer', fontSize: '0.8rem' }}
+                                        >
+                                            ▼
+                                        </button>
+                                    </div>
+                                ) : (
+                                    stop.sort || index + 1
+                                )}
+                            </td>
+                            <td>{editMode ? stopTypeDropdown(stop, index) : <img src={stopType.find((t) => t.value === stop.type)?.icon} alt={stop.type} />}</td>
+                            <td>{editMode ? <input type="text" value={stop.stop_name || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, stop_name: e.target.value } : s))} /> : stop.stop_name}</td>
+                            <td>{editMode ? <input type="text" value={stop.location || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, location: e.target.value } : s))} /> : formatLocation(stop.location)}</td>
+                            <td>{editMode ? <input type="number" className="no-spinners" value={stop.budget || ''} onChange={(e)=>setStops(stops.map((s,i)=>i===index?{...s,budget:e.target.value}:s))}></input> : stop.budget != null ? Number(stop.budget).toFixed(2) : ''}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {editMode ? (
+                <button className='std-button' onClick={() => setStops([...stops, {id: Date.now(), trip_id:selectedTrip.id, stop_name: 'New Stop', location: '', note: '', depart: '', stay: '', arrive: '', budget: null, type: 'waypoint'}])}>Add Stop</button>
+            ) : (null)}
+        </div>
+    )
+}
+
+//#endregion
