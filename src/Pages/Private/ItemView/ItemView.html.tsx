@@ -1,5 +1,6 @@
 //#region Imports
 import {convertSecondsToHoursMinutes, convertMetersToMiles} from './ItemView.hooks'
+import { Fragment } from 'react'
 
 //#endregion
 
@@ -168,7 +169,8 @@ const stopType = [
  * @param setStops - Function to set the stops of the trip
  * @returns 
  */
-export const StopTable = ({stops, editMode, setStops, selectedTrip}:{stops: any[], editMode: boolean, setStops: (stops: any[]) => void, selectedTrip: any}) =>{
+export const StopTable = ({stops, editMode, setStops, selectedTrip, cancelEvent}:{stops: any[], editMode: boolean, setStops: (stops: any[]) => void, selectedTrip: any, cancelEvent : number}) =>{
+
 
     const moveStop = (index: number, direction: 'up' | 'down') => {
         if (direction === 'up' && index > 0) {
@@ -210,6 +212,17 @@ export const StopTable = ({stops, editMode, setStops, selectedTrip}:{stops: any[
         )
     }
 
+    const stayChangeHandeler = (index:number, type:'hours'|'minutes', value:string) => {
+        setStops(stops.map((s, i) => {
+            if (i === index) {
+                const currentH = (s.stay || '').split(':')[0] || '';
+                const currentM = (s.stay || '').split(':')[1] || '';
+                return { ...s, stay: type === 'hours' ? `${value}:${currentM}` : `${currentH}:${value}` };
+            }
+            return s;
+        }));
+    }
+
     return(
         <div className='stop-table'>
             <table>
@@ -221,40 +234,73 @@ export const StopTable = ({stops, editMode, setStops, selectedTrip}:{stops: any[
                         <th>Stop Name</th>
                         <th>Location</th>
                         <th>Budget</th>
+                        <th>Arrival</th>
+                        <th>Break</th>
+                        <th>Depart</th>
                     </tr>
                 </thead>
                 <tbody>
                     {stops.map((stop, index) => (
-                        <tr key={index}>
-                            <td>
-                                {editMode ? (
-                                    <div style={{ display: 'flex', gap: '0.25rem', flexDirection: 'column', alignItems: 'center' }}>
-                                        <button 
-                                            type="button" 
-                                            onClick={() => moveStop(index, 'up')} 
-                                            disabled={index === 0}
-                                            style={{ padding: '0 0.4rem', cursor: index === 0 ? 'not-allowed' : 'pointer', fontSize: '0.8rem' }}
-                                        >
-                                            ▲
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            onClick={() => moveStop(index, 'down')} 
-                                            disabled={index === stops.length - 1}
-                                            style={{ padding: '0 0.4rem', cursor: index === stops.length - 1 ? 'not-allowed' : 'pointer', fontSize: '0.8rem' }}
-                                        >
-                                            ▼
-                                        </button>
+                        <Fragment key={index}>
+                            <tr>
+                                <td>
+                                    {editMode ? (
+                                        <div style={{ display: 'flex', gap: '0.25rem', flexDirection: 'column', alignItems: 'center' }}>
+                                            <button 
+                                                type="button" 
+                                                onClick={() => moveStop(index, 'up')} 
+                                                disabled={index === 0}
+                                                style={{ padding: '0 0.4rem', cursor: index === 0 ? 'not-allowed' : 'pointer', fontSize: '0.8rem' }}
+                                            >
+                                                ▲
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                onClick={() => moveStop(index, 'down')} 
+                                                disabled={index === stops.length - 1}
+                                                style={{ padding: '0 0.4rem', cursor: index === stops.length - 1 ? 'not-allowed' : 'pointer', fontSize: '0.8rem' }}
+                                            >
+                                                ▼
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        stop.sort || index + 1
+                                    )}
+                                </td>
+                                <td>{editMode ? stopTypeDropdown(stop, index) : <img src={stopType.find((t) => t.value === stop.type)?.icon} alt={stop.type} />}</td>
+                                <td>{editMode ? <input type="text" value={stop.stop_name || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, stop_name: e.target.value } : s))} /> : stop.stop_name}</td>
+                                <td>{editMode ? <input type="text" value={stop.location || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, location: e.target.value } : s))} /> : formatLocation(stop.location)}</td>
+                                <td>{editMode ? <input type="number" className="no-spinners" value={stop.budget || ''} onChange={(e)=>setStops(stops.map((s,i)=>i===index?{...s,budget:e.target.value}:s))}></input> : '$' + (stop.budget != null ? Number(stop.budget).toFixed(2) : '0.00')}</td>
+                                <td>{editMode || stop.type==='origin' ? null : (stop.arrive ? stop.arrive.substring(0, 5) : null)}</td>
+                                <td>{editMode && stop.type!=='origin' && stop.type !=='hotel' && stop.type !=='end' ? 
+                                    <div style={{display:'flex', gap: '0.2rem', alignItems: 'center'}}>
+                                        <input type='text' className="no-spinners std-input" value={(stop.stay || '').split(':')[0] || ''} onChange={(e) => stayChangeHandeler(index, 'hours', e.target.value)} /> H
+                                        <input type='text' className="no-spinners std-input" value={(stop.stay || '').split(':')[1] || ''} onChange={(e) => stayChangeHandeler(index, 'minutes', e.target.value)} /> M
+                                    </div> : stop.type!=='origin' && stop.type !=='hotel' && stop.type !=='end' ? stop.stay || null : null}
+                                </td>
+                                <td>{editMode && (stop.type==='origin' || stop.type ==='hotel') ? <input type='time' value={stop.depart ? stop.depart.substring(0, 5) : ''} onChange={(e)=>setStops(stops.map((s,i)=>i===index?{...s,depart:e.target.value}:s))} style={{ width: '6rem' }}/>: (stop.depart ? stop.depart.substring(0, 5) : null)}</td>
+                            </tr>   
+                            <tr>
+                                <td colSpan={2}>Notes:</td>
+                                <td colSpan={6}>
+                                    {editMode ? (
+                                        <input placeholder="Notes..." type='textarea' value={stop.note || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, note: e.target.value } : s))} />
+                                    ) : (
+                                        stop.note ? <div>{stop.note}</div> : null
+                                    )}
+                                </td>
+                            </tr>
+                            {stop.type!=='end'?
+                            <tr>
+                                <td colSpan={8}>
+                                    <div style={{display:'flex', flexDirection:'column'}}>
+                                        <span>Distance to next stop:{convertMetersToMiles(stop.distance_to_next_stop)}</span>
+                                        <span>Time to next stop:{convertSecondsToHoursMinutes(stop.time_to_next_stop)}</span>
                                     </div>
-                                ) : (
-                                    stop.sort || index + 1
-                                )}
-                            </td>
-                            <td>{editMode ? stopTypeDropdown(stop, index) : <img src={stopType.find((t) => t.value === stop.type)?.icon} alt={stop.type} />}</td>
-                            <td>{editMode ? <input type="text" value={stop.stop_name || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, stop_name: e.target.value } : s))} /> : stop.stop_name}</td>
-                            <td>{editMode ? <input type="text" value={stop.location || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, location: e.target.value } : s))} /> : formatLocation(stop.location)}</td>
-                            <td>{editMode ? <input type="number" className="no-spinners" value={stop.budget || ''} onChange={(e)=>setStops(stops.map((s,i)=>i===index?{...s,budget:e.target.value}:s))}></input> : stop.budget != null ? Number(stop.budget).toFixed(2) : ''}</td>
-                        </tr>
+                                </td>
+                            </tr>
+                            :null}
+                        </Fragment>
                     ))}
                 </tbody>
             </table>

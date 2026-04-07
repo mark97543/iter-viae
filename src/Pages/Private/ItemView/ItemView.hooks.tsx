@@ -69,16 +69,7 @@ export const useItemViewData = () => {
                 sort: ['sort']
             }));            
             
-            // Split stay (hh:mm) into stayHours and stayMinutes for UI
-            const processedStops = (result as any[]).map(stop => {
-                if (stop.stay) {
-                    const [hours, minutes] = stop.stay.split(':');
-                    return { ...stop, stayHours: hours, stayMinutes: minutes };
-                }
-                return { ...stop, stayHours: '', stayMinutes: '' };
-            });
-            
-            return processedStops;
+            return result;
         } catch (err: any) {
             console.error("Error fetching stops from Directus: [useItemViewData]", err);
             setError(err.message || "Failed to fetch stops");
@@ -98,11 +89,6 @@ export const useItemViewData = () => {
             }
             
             const promises = stops.map((stop, index) => {
-                // Combine stayHours and stayMinutes into stay (hh:mm)
-                const hours = stop.stayHours?.padStart(2, '0') || '00';
-                const minutes = stop.stayMinutes?.padStart(2, '0') || '00';
-                const stayCombined = (stop.stayHours || stop.stayMinutes) ? `${hours}:${minutes}` : null;
-
                 const payload = {
                     sort: index + 1,
                     stop_name: stop.stop_name || null,
@@ -111,7 +97,7 @@ export const useItemViewData = () => {
                     location: stop.location || null,
                     note: stop.note || null,
                     depart: stop.depart || null,
-                    stay: stayCombined,
+                    stay: stop.stay || null,
                     arrive: stop.arrive || null,
                     distance_to_next_stop: stop.distance_to_next_stop ?? null,
                     time_to_next_stop: stop.time_to_next_stop != null ? String(stop.time_to_next_stop) : null

@@ -19,6 +19,7 @@ const ItemView = () => {
     const [tempSummary, setTempSummary] = useState(selectedTrip?.summary);
     const [tempStartDate, setTempStartDate] = useState(selectedTrip?.status_date);
     const [tempStatus, setTempStatus] = useState(selectedTrip?.status);
+    const [cancelEvent, setCancelEvent] = useState(1); //cancel event listner 
 
     const onCancel = () => {
         setTempTitle(selectedTrip?.trip_title);
@@ -27,6 +28,7 @@ const ItemView = () => {
         setTempStatus(selectedTrip?.status);
         setStops(originalStops);
         setEditMode(false);
+        setCancelEvent(cancelEvent + 1);
     }
 
     const onSave = async () => {
@@ -70,44 +72,60 @@ const ItemView = () => {
                 let arrivaltime: string | null = null;
                 let departuretime: string | null = null;
 
-                // 1. Calculate arrival time
-                if (stop.type !== 'origin') {
-                    if (cumulativeDepartureSeconds !== null) {
-                        const travelTimeSeconds = routeData.durations[index - 1] || 0;
-                        const totalArrivalSeconds = cumulativeDepartureSeconds + travelTimeSeconds;
-                        
-                        const aHours = Math.floor(totalArrivalSeconds / 3600) % 24;
-                        const aMinutes = Math.floor((totalArrivalSeconds % 3600) / 60);
-                        arrivaltime = `${String(aHours).padStart(2, '0')}:${String(aMinutes).padStart(2, '0')}`;
-                        
-                        // We set cumulative to this arrival time temporarily until we calculate departure
-                        cumulativeDepartureSeconds = totalArrivalSeconds; 
+                // 0. Fallback: Assure schedule starts calculating if it hasn't started yet
+                if (cumulativeDepartureSeconds === null) {
+                    if (stop.depart) {
+                        const [h, m] = stop.depart.split(':').map(Number);
+                        cumulativeDepartureSeconds = (h * 3600) + (m * 60);
+                        if (stop.type !== 'origin' && stop.type !== 'hotel') {
+                            const currentTotal = cumulativeDepartureSeconds;
+                            const hStr = Math.floor(currentTotal / 3600) % 24;
+                            const mStr = Math.floor((currentTotal % 3600) / 60);
+                            arrivaltime = `${String(hStr).padStart(2, '0')}:${String(mStr).padStart(2, '0')}`;
+                        }
+                    } else {
+                        cumulativeDepartureSeconds = 8 * 3600; // default 8:00 AM
+                        if (stop.type !== 'origin' && stop.type !== 'hotel') {
+                            arrivaltime = "08:00"; 
+                        }
                     }
                 }
 
-                // 2. Calculate departure time
-                if (stop.type === 'origin' || stop.type === 'hotel') {
-                    departuretime = stop.depart;
-                    if (stop.type === 'origin') {
-                        arrivaltime = null;
-                    }
+                // 1. Calculate arrival time (if not initialized by step 0)
+                if (stop.type !== 'origin' && index > 0) {
+                    const travelTimeSeconds = routeData.durations[index - 1] || 0;
+                    const totalArrivalSeconds = cumulativeDepartureSeconds + travelTimeSeconds;
+                    
+                    const aHours = Math.floor(totalArrivalSeconds / 3600) % 24;
+                    const aMinutes = Math.floor((totalArrivalSeconds % 3600) / 60);
+                    arrivaltime = `${String(aHours).padStart(2, '0')}:${String(aMinutes).padStart(2, '0')}`;
+                    
+                    // Set cumulative to arrival time before calculating the break offset
+                    cumulativeDepartureSeconds = totalArrivalSeconds; 
+                }
 
-                    if (departuretime) {
-                        const [hours, minutes] = departuretime.split(':').map(Number);
-                        cumulativeDepartureSeconds = (hours * 3600) + (minutes * 60);
-                    }
+                // 2. Calculate departure time
+                if (stop.type === 'hotel') {
+                    // Hotel resets the schedule to its start time for the next leg
+                    departuretime = stop.depart || "08:00";
+                    const [hours, minutes] = (departuretime as string).split(':').map(Number);
+                    cumulativeDepartureSeconds = (hours * 3600) + (minutes * 60);
+                } else if (stop.type === 'origin') {
+                    departuretime = stop.depart || "08:00";
+                    const [hours, minutes] = (departuretime as string).split(':').map(Number);
+                    cumulativeDepartureSeconds = (hours * 3600) + (minutes * 60);
+                    arrivaltime = null; // origins strictly have no arrival
                 } else if (stop.type === 'end') {
                     // end stop doesn't have a departure time that matters for the route
                     departuretime = null;
                 } else {
                     // Regular stop - departure is arrival + stay
-                    if (arrivaltime && cumulativeDepartureSeconds !== null) {
-                        const totalDepartureSeconds = cumulativeDepartureSeconds + stayInSeconds;
-                        const dHours = Math.floor(totalDepartureSeconds / 3600) % 24;
-                        const dMinutes = Math.floor((totalDepartureSeconds % 3600) / 60);
-                        departuretime = `${String(dHours).padStart(2, '0')}:${String(dMinutes).padStart(2, '0')}`;
-                        cumulativeDepartureSeconds = totalDepartureSeconds;
-                    }
+                    const currentBaseSeconds = cumulativeDepartureSeconds || (8 * 3600);
+                    const totalDepartureSeconds = currentBaseSeconds + stayInSeconds;
+                    const dHours = Math.floor(totalDepartureSeconds / 3600) % 24;
+                    const dMinutes = Math.floor((totalDepartureSeconds % 3600) / 60);
+                    departuretime = `${String(dHours).padStart(2, '0')}:${String(dMinutes).padStart(2, '0')}`;
+                    cumulativeDepartureSeconds = totalDepartureSeconds;
                 }
 
                 const sHours = Math.floor(stayInSeconds / 3600);
@@ -249,7 +267,7 @@ const ItemView = () => {
                 />
             </div>
 
-            <StopTable stops={stops} editMode={editMode} setStops={setStops} selectedTrip={selectedTrip}/>
+            <StopTable stops={stops} editMode={editMode} setStops={setStops} selectedTrip={selectedTrip} cancelEvent={cancelEvent}/>
 
             <div className='item-button-container'>
                 {editMode ? (

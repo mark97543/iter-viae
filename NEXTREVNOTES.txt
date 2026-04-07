@@ -2,7 +2,8 @@
 - Need to figure out how to handle post trip. (Maybe when complted go to a difference page)
 - Need to Add Rating System
 - Desktop View, Post trip allow the inputing of actual budget. 
-- Item View, Stat, Budget Need to make sure we use 2 decimal places for money 
+- Need to fix the dacshboard card budget to display like i nthe item view with 2 decimals. 
+- Edit mode for the Itembvoer make the arrival and departs live updates? 
 
 
 Quality of Life Future: 
