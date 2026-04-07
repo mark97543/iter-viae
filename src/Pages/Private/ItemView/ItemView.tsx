@@ -267,7 +267,7 @@ const ItemView = () => {
                 />
             </div>
 
-            <StopTable stops={stops} editMode={editMode} setStops={setStops} selectedTrip={selectedTrip} cancelEvent={cancelEvent}/>
+            <StopTable stops={stops} editMode={editMode} setStops={setStops} selectedTrip={selectedTrip}/>
 
             <div className='item-button-container'>
                 {editMode ? (

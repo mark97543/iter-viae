@@ -12,8 +12,8 @@
 
 .statistics{
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+    gap: 1rem;
     text-align: center;
     justify-items: center;
     align-items: center;
@@ -335,4 +335,183 @@
 }
 .no-spinners {
   -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
 }
+
+/* Table Specific Theme Styles */
+.stop-table {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 1rem;
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    padding: 0;
+    padding-bottom: 1rem; /* Space for the scrollbar to breathe */
+}
+
+/* Ensure the scrollbar is always visible and themed for this table */
+.stop-table::-webkit-scrollbar {
+    height: 8px; /* Height for the horizontal scrollbar */
+}
+
+.stop-table::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+}
+
+.stop-table::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+}
+
+.stop-table::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
+}
+
+.stop-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-main);
+    color: var(--color-text);
+}
+
+.stop-table caption {
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.stop-table caption h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.stop-table th {
+    text-align: left;
+    padding: 1rem 0.5rem;
+    border-bottom: 2px solid var(--color-border);
+    color: var(--color-text-dim);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.stop-table td {
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+}
+
+.stop-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Standardize table input aesthetics to match theme */
+.stop-table td input[type="text"],
+.stop-table td input[type="number"],
+.stop-table td input[type="time"],
+.stop-table td textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: transparent;
+    color: var(--color-text);
+    font-family: var(--font-main);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.stop-table td input:focus,
+.stop-table td textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.stop-table td input:disabled,
+.stop-table td textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: rgba(128, 128, 128, 0.1);
+}
+
+.stop-table td img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+/* Layout helpers for inner table containers */
+.distance-time-summary {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+    padding: 0.5rem 1rem;
+    color: var(--color-text-dim);
+    font-size: 0.9rem;
+    border-bottom: 1px dashed var(--color-border);
+    justify-content: flex-end;
+}
+
+/* Stop group styling for readability */
+.stop-row-even td {
+    background-color: rgba(128, 128, 128, 0.05); /* subtle highlight for grouped rows */
+}
+
+.stop-row-start td {
+    border-top: 2px solid var(--color-border) !important;
+}
+
+.stop-group-row td {
+    border-bottom: none; /* remove borders between a single stop's internal sub-rows */
+}
+
+.stop-row-end td {
+    border-bottom: 2px solid var(--color-border) !important; /* Cap the bottom of the group */
+}
+
+/* Responsive Table Adjustments */
+@media (max-width: 700px) {
+    .stop-table {
+        padding: 0.5rem;
+    }
+    .stop-table th, .stop-table td {
+        padding: 0.4rem 0.2rem;
+        font-size: 0.8rem;
+    }
+    .stop-table caption h3 {
+        font-size: 1.4rem;
+    }
+    .stop-table td input[type="text"],
+    .stop-table td input[type="number"],
+    .stop-table td input[type="time"],
+    .stop-table td textarea {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.15rem;
+    }
+    .stop-type-select {
+        width: 75px;
+        height: 2rem;
+        font-size: 0.75rem;
+    }
+    .distance-time-summary {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.3rem;
+        padding: 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    /* Tighten specific column widths to reduce horizontal sprawl */
+    .stop-table th:nth-child(1), .stop-table td:nth-child(1) { width: 30px; text-align: center; } /* # */
+    .stop-table th:nth-child(2), .stop-table td:nth-child(2) { width: 40px; text-align: center; } /* Type */
+    .stop-table th:nth-child(5), .stop-table td:nth-child(5) { width: 70px; } /* Budget */
+    .stop-table th:nth-child(6), .stop-table td:nth-child(6) { width: 60px; } /* Arrival */
+    .stop-table th:nth-child(7), .stop-table td:nth-child(7) { width: 90px; } /* Break */
+    .stop-table th:nth-child(8), .stop-table td:nth-child(8) { width: 60px; } /* Depart */
+}
+

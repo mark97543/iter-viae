@@ -8,7 +8,7 @@ const Print = ({}: {}) => {
     const {selectedTrip}=useAppState();
     const { fetchStops } = useItemViewData();
     const [stops, setStops] = useState<any[]>([]);
-    const STOPSIZE =4; //How many stops per page
+    const STOPSIZE =3; //How many stops per page
 
     useEffect(() => {
         if (selectedTrip?.id && typeof fetchStops === 'function') {

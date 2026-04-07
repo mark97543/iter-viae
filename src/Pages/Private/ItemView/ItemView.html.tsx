@@ -169,7 +169,7 @@ const stopType = [
  * @param setStops - Function to set the stops of the trip
  * @returns 
  */
-export const StopTable = ({stops, editMode, setStops, selectedTrip, cancelEvent}:{stops: any[], editMode: boolean, setStops: (stops: any[]) => void, selectedTrip: any, cancelEvent : number}) =>{
+export const StopTable = ({stops, editMode, setStops, selectedTrip}:{stops: any[], editMode: boolean, setStops: (stops: any[]) => void, selectedTrip: any}) =>{
 
 
     const moveStop = (index: number, direction: 'up' | 'down') => {
@@ -223,26 +223,28 @@ export const StopTable = ({stops, editMode, setStops, selectedTrip, cancelEvent}
         }));
     }
 
-    return(
-        <div className='stop-table'>
-            <table>
-                <caption><h3>Stops</h3></caption>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Type</th>
-                        <th>Stop Name</th>
-                        <th>Location</th>
-                        <th>Budget</th>
-                        <th>Arrival</th>
-                        <th>Break</th>
-                        <th>Depart</th>
-                    </tr>
-                </thead>
-                <tbody>
+    return (
+        <div style={{ width: '100%' }}>
+            <h3>Stops</h3>
+            <div className='stop-table'>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Type</th>
+                            <th>Stop Name</th>
+                            <th>Location</th>
+                            <th>Budget</th>
+                            <th>Arrival</th>
+                            <th>Break</th>
+                            <th>Depart</th>
+                            {editMode && <th></th>}
+                        </tr>
+                    </thead>
+                    <tbody>
                     {stops.map((stop, index) => (
                         <Fragment key={index}>
-                            <tr>
+                            <tr className={`stop-group-row ${index % 2 === 0 ? 'stop-row-even' : 'stop-row-odd'} stop-row-start`}>
                                 <td>
                                     {editMode ? (
                                         <div style={{ display: 'flex', gap: '0.25rem', flexDirection: 'column', alignItems: 'center' }}>
@@ -268,47 +270,74 @@ export const StopTable = ({stops, editMode, setStops, selectedTrip, cancelEvent}
                                     )}
                                 </td>
                                 <td>{editMode ? stopTypeDropdown(stop, index) : <img src={stopType.find((t) => t.value === stop.type)?.icon} alt={stop.type} />}</td>
-                                <td>{editMode ? <input type="text" value={stop.stop_name || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, stop_name: e.target.value } : s))} /> : stop.stop_name}</td>
-                                <td>{editMode ? <input type="text" value={stop.location || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, location: e.target.value } : s))} /> : formatLocation(stop.location)}</td>
-                                <td>{editMode ? <input type="number" className="no-spinners" value={stop.budget || ''} onChange={(e)=>setStops(stops.map((s,i)=>i===index?{...s,budget:e.target.value}:s))}></input> : '$' + (stop.budget != null ? Number(stop.budget).toFixed(2) : '0.00')}</td>
+                                <td>{editMode ? <input type="text" placeholder="Stop Name" value={stop.stop_name || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, stop_name: e.target.value } : s))} /> : stop.stop_name}</td>
+                                <td>{editMode ? <input type="text" placeholder="Location (lat,lng)" value={stop.location || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, location: e.target.value } : s))} /> : <span style={{ cursor: 'pointer', color: 'var(--color-text)' }} title="Click to copy location" onClick={() => navigator.clipboard.writeText(stop.location || '')}>{formatLocation(stop.location)}</span>}</td>
+                                <td>{editMode ? <input type="number" placeholder="Budget" className="no-spinners" value={stop.budget || ''} onChange={(e)=>setStops(stops.map((s,i)=>i===index?{...s,budget:e.target.value}:s))}></input> : '$' + (stop.budget != null ? Number(stop.budget).toFixed(2) : '0.00')}</td>
                                 <td>{editMode || stop.type==='origin' ? null : (stop.arrive ? stop.arrive.substring(0, 5) : null)}</td>
                                 <td>{editMode && stop.type!=='origin' && stop.type !=='hotel' && stop.type !=='end' ? 
                                     <div style={{display:'flex', gap: '0.2rem', alignItems: 'center'}}>
-                                        <input type='text' className="no-spinners std-input" value={(stop.stay || '').split(':')[0] || ''} onChange={(e) => stayChangeHandeler(index, 'hours', e.target.value)} /> H
-                                        <input type='text' className="no-spinners std-input" value={(stop.stay || '').split(':')[1] || ''} onChange={(e) => stayChangeHandeler(index, 'minutes', e.target.value)} /> M
+                                        <input type='text' className="no-spinners std-input" value={(stop.stay || '').split(':')[0] || ''} onChange={(e) => stayChangeHandeler(index, 'hours', e.target.value)} placeholder='HH'/> H
+                                        <input type='text' className="no-spinners std-input" value={(stop.stay || '').split(':')[1] || ''} onChange={(e) => stayChangeHandeler(index, 'minutes', e.target.value)} placeholder='MM'/> M
                                     </div> : stop.type!=='origin' && stop.type !=='hotel' && stop.type !=='end' ? stop.stay || null : null}
                                 </td>
                                 <td>{editMode && (stop.type==='origin' || stop.type ==='hotel') ? <input type='time' value={stop.depart ? stop.depart.substring(0, 5) : ''} onChange={(e)=>setStops(stops.map((s,i)=>i===index?{...s,depart:e.target.value}:s))} style={{ width: '6rem' }}/>: (stop.depart ? stop.depart.substring(0, 5) : null)}</td>
+                                {editMode && (
+                                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => {
+                                                if (window.confirm('Are you sure you want to completely remove this stop?')) {
+                                                    setStops(stops.filter((_, i) => i !== index));
+                                                }
+                                            }}
+                                            style={{ padding: '0.2rem', cursor: 'pointer', background: 'none', border: 'none' }}
+                                            title="Delete Stop"
+                                        >
+                                            <span className="material-symbols-outlined" style={{ fontSize: '1.4rem', color: 'red' }}>delete</span>
+                                        </button>
+                                    </td>
+                                )}
                             </tr>   
-                            <tr>
-                                <td colSpan={2}>Notes:</td>
-                                <td colSpan={6}>
+                            <tr className={`stop-group-row ${index % 2 === 0 ? 'stop-row-even' : 'stop-row-odd'} ${stop.type === 'end' ? 'stop-row-end' : ''}`}>
+                                <td colSpan={editMode ? 9 : 8} style={{ paddingTop: '0.2rem' }}>
                                     {editMode ? (
-                                        <input placeholder="Notes..." type='textarea' value={stop.note || ''} onChange={(e) => setStops(stops.map((s, i) => i === index ? { ...s, note: e.target.value } : s))} />
+                                        <textarea 
+                                            placeholder="Notes (Max 5 lines)..." 
+                                            rows={5} 
+                                            style={{ width: '100%', marginTop: '0.2rem', resize: 'vertical' }} 
+                                            value={stop.note || ''} 
+                                            onChange={(e) => {
+                                                const truncatedText = e.target.value.split('\n').slice(0, 5).join('\n');
+                                                setStops(stops.map((s, i) => i === index ? { ...s, note: truncatedText } : s));
+                                            }} 
+                                        />
                                     ) : (
-                                        stop.note ? <div>{stop.note}</div> : null
+                                        stop.note ? <div style={{ fontSize: '0.9rem', color: 'var(--color-text-dim)', whiteSpace: 'pre-wrap' }}>{stop.note}</div> : null
                                     )}
                                 </td>
                             </tr>
-                            {stop.type!=='end'?
-                            <tr>
-                                <td colSpan={8}>
-                                    <div style={{display:'flex', flexDirection:'column'}}>
-                                        <span>Distance to next stop:{convertMetersToMiles(stop.distance_to_next_stop)}</span>
-                                        <span>Time to next stop:{convertSecondsToHoursMinutes(stop.time_to_next_stop)}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            :null}
+                            {stop.type!=='end' ? (
+                                <tr className={`stop-group-row ${index % 2 === 0 ? 'stop-row-even' : 'stop-row-odd'} stop-row-end`}>
+                                    <td colSpan={editMode ? 9 : 8} style={{ padding: 0 }}>
+                                        <div className="distance-time-summary">
+                                            <span><strong>Distance:</strong> {convertMetersToMiles(stop.distance_to_next_stop)}</span>
+                                            <span><strong>Drive Time:</strong> {convertSecondsToHoursMinutes(stop.time_to_next_stop)}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : null}
                         </Fragment>
                     ))}
                 </tbody>
             </table>
             {editMode ? (
-                <button className='std-button' onClick={() => setStops([...stops, {id: Date.now(), trip_id:selectedTrip.id, stop_name: 'New Stop', location: '', note: '', depart: '', stay: '', arrive: '', budget: null, type: 'waypoint'}])}>Add Stop</button>
-            ) : (null)}
+                <button className='std-button' onClick={() => setStops([...stops, {id: Date.now(), trip_id:selectedTrip.id, stop_name: 'New Stop', location: '', note: '', depart: '', stay: '', arrive: '', budget: null, type: 'waypoint'}])} style={{ marginTop: '1rem' }}>Add Stop</button>
+            ) : null}
+            </div>
         </div>
     )
 }
+
+
 
 //#endregion
