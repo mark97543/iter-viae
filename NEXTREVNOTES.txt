@@ -9,4 +9,4 @@
 - Weather Incorperation .
 - Sunris/Sunset
 - DB need to set it up to go through stops and delete any items that do no have a coresponding trip ID.
-
+- Update Home Page to feed off of DB
