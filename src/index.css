@@ -2,6 +2,10 @@
 /*                               Base Components                              */
 /* -------------------------------------------------------------------------- */
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :root {
   --color-bg: #121212;  /* Main UI background*/
   --color-surface: #1E1E1E; /* Card surfaces, navigation bars*/

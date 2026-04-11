@@ -4,6 +4,7 @@
 - Desktop View, Post trip allow the inputing of actual budget. 
 - Need to fix the dacshboard card budget to display like i nthe item view with 2 decimals. 
 - Edit mode for the Itembvoer make the arrival and departs live updates? 
+- Google Calander feature? 
 
 
 Quality of Life Future: 
