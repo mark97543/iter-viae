@@ -5,7 +5,8 @@
 - Need to fix the dacshboard card budget to display like i nthe item view with 2 decimals. 
 - Edit mode for the Itembvoer make the arrival and departs live updates? 
 - Google Calander feature? 
+- Wind Chill Chart
+- Weather Incorperation .
+- Sunris/Sunset
+- DB need to set it up to go through stops and delete any items that do no have a coresponding trip ID.
 
-
-Quality of Life Future: 
-- Make it so there is auto logout. The user seems to event thought he token expires to have the logout option in the top right corner.

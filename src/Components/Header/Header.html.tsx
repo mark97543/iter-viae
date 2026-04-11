@@ -29,7 +29,10 @@ export const HeaderRight = () =>{
   return(
     <div className="HeaderRightWrapper">
       {user ? (
-        <button className="std-button" onClick={() => logout()}>Logout</button>
+        <button className="std-button" onClick={() => {
+          logout();
+          navigate('/login');
+        }}>Logout</button>
       ) : (
         <button className="std-button" onClick={() => navigate('/login')}>Login</button>
       )}

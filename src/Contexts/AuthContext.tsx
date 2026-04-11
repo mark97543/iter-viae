@@ -23,9 +23,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           try {
             const data = await client.request(readMe());
             setUser(data);
-          } catch {
-            // If readMe fails but we have a token, assume they are logged in but lack permissions
-            setUser({ requires_permission_fix: true });
+          } catch (error) {
+            console.warn("Token validation failed, clearing session:", error);
+            localStorage.removeItem('directus_token');
+            setUser(null);
           }
       } else {
           setUser(null);
